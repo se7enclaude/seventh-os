@@ -1,0 +1,68 @@
+{
+ "version": 1,
+ "apps": [
+  {
+   "id": "se7en-ia",
+   "name": "se7en IA",
+   "subtitle": "se7en studio · After Effects",
+   "tagline": "Tes edits d'anime dans After Effects, en un clic.",
+   "accent": "#E9A19A",
+   "description": [
+    "Le logiciel d'edit d'anime connecté à After Effects : une bibliothèque de plus de 2 000 effets, CC, transitions et scènes tirés de vrais projets d'editeurs, avec un aperçu vidéo de chacun.",
+    "« Tout faire pour moi » : tu donnes tes clips et ta musique, il monte l'edit dans le style du projet choisi (coupes sur le son, effets, scènes sur les drops, sons), directement dans ta compo."
+   ],
+   "features": ["Bibliothèque d'effets avec aperçus vidéo", "AI Edit : « Tout faire pour moi »", "SFX placés sur l'action et la musique", "Paroles calées sur la voix", "Export MP4"],
+   "requires": "Windows 10/11 · After Effects 2022 ou plus récent",
+   "keeps": "Tes sons, tes projets de référence et tes réglages sont gardés.",
+   "repo": "se7enclaude/se7en-ia-agent-after-effect",
+   "private": true,
+   "kind": "inno",
+   "manifest": "latest.json",
+   "manifestKey": "update",
+   "uninstallKey": "{8E3F2C71-5A9B-4D3E-9C1F-7A2B6E5D4C30}_is1",
+   "exe": "se7en studio.exe"
+  },
+  {
+   "id": "se7en-download",
+   "name": "se7en Download",
+   "subtitle": "Télécharger · IA · Convertir · Découper · Lire",
+   "tagline": "Télécharge, améliore et convertis tes vidéos.",
+   "accent": "#F2564B",
+   "description": [
+    "Le tout-en-un pour tes vidéos : téléchargement depuis près de 1 800 sites, file d'attente, conversion, découpe et lecteur qui lit tout.",
+    "L'IA améliore tes images et vidéos sur ton PC : agrandir, restaurer les visages, détourer, coloriser, fluidifier à 60 ou 120 i/s."
+   ],
+   "features": ["≈ 1 800 sites (vidéo, audio, images)", "IA : agrandir, visages, détourage, colorisation, fluidité", "Convertir et découper sans perte", "Lecteur, historique, doublons"],
+   "requires": "Windows 10/11 · WebView2 (ajouté par l'installation si besoin)",
+   "keeps": "Ton historique et tes réglages sont gardés.",
+   "repo": "se7enclaude/se7en-download",
+   "private": false,
+   "kind": "inno",
+   "manifest": "latest.json",
+   "manifestKey": "setup",
+   "uninstallKey": "{5B7C0E0A-7A51-4C6E-9C43-6D1B6F0A6E11}_is1",
+   "exe": "se7en.exe"
+  },
+  {
+   "id": "se7en-dualsense",
+   "name": "se7en DualSense",
+   "subtitle": "Ta manette PS5 sur PC",
+   "tagline": "Ta DualSense dans tous tes jeux PC.",
+   "accent": "#D7F23A",
+   "description": [
+    "Utilise ta manette PS5 DualSense sur PC, en USB ou en Bluetooth, dans n'importe quel jeu : émulation DualShock 4 (icônes PlayStation), Xbox 360 ou DualSense native.",
+    "Correction du drift des sticks, mappage complet (clavier, souris, macros), profils par jeu, gyroscope, gâchettes adaptatives et manette 3D en temps réel."
+   ],
+   "features": ["DualShock 4, Xbox 360 ou DualSense native", "Anti-drift et calibration guidée", "Mappage, macros, profils par jeu", "Jusqu'à 4 manettes"],
+   "requires": "Windows 10/11 · pilotes ViGEmBus et HidHide (proposés par l'appli)",
+   "keeps": "Tes profils et réglages de manette sont gardés.",
+   "repo": "se7enclaude/se7en-dualsense",
+   "private": false,
+   "kind": "portable",
+   "asset": "se7en-DualSense.exe",
+   "installDir": "%LOCALAPPDATA%\\Programs\\se7en DualSense",
+   "exe": "se7en DualSense.exe",
+   "shortcuts": ["programs", "desktop"]
+  }
+ ]
+}

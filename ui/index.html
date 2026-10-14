@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'">
+<title>Seventh OS</title>
+<link rel="stylesheet" href="os.css">
+</head>
+<body>
+<div class="ambient"></div>
+
+<!-- code d'accès (premier lancement) -->
+<section id="lock" class="lock" hidden>
+  <div class="lock-card glass">
+    <img class="lock-logo" src="icons/seventh-os.png" alt="">
+    <h1>SEVENTH <i>OS</i></h1>
+    <p>Toutes les applis se7en au même endroit.<br>Entre ton code d'accès : il n'est demandé qu'une fois.</p>
+    <form id="lock-form" autocomplete="off">
+      <input id="lock-code" type="password" placeholder="Code d'accès" spellcheck="false">
+      <button class="btn primary" type="submit">Entrer</button>
+    </form>
+    <div id="lock-msg" class="lock-msg"></div>
+  </div>
+</section>
+
+<!-- le hub -->
+<main id="hub" class="hub" hidden>
+  <header class="top">
+    <div class="brand glass">
+      <img src="icons/seventh-os.png" alt="">
+      <b>SEVENTH <i>OS</i></b>
+    </div>
+    <div class="status glass" id="status"><span class="dot"></span><span class="txt">Connexion…</span></div>
+    <div class="spacer"></div>
+    <button class="icon-btn glass" id="refresh" title="Actualiser">⟳</button>
+  </header>
+
+  <div id="hub-update" class="banner glass" hidden></div>
+
+  <section class="hero">
+    <h2>Tes applis</h2>
+    <p id="hero-sub">Installe, ouvre et mets à jour toutes les applis se7en en un clic.</p>
+    <button id="update-all" class="btn primary" hidden>Tout mettre à jour</button>
+  </section>
+
+  <section id="grid" class="grid"></section>
+  <footer class="foot" id="foot"></footer>
+</main>
+
+<!-- fiche d'une appli -->
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-back" data-close></div>
+  <article class="sheet-card glass" id="sheet-card"></article>
+</div>
+
+<!-- confirmation -->
+<div id="confirm" class="sheet" hidden>
+  <div class="sheet-back" data-cancel></div>
+  <div class="confirm-card glass">
+    <h3 id="confirm-title"></h3>
+    <p id="confirm-text"></p>
+    <div class="row end">
+      <button class="btn ghost" data-cancel>Annuler</button>
+      <button class="btn danger" id="confirm-ok">Désinstaller</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts" class="toasts"></div>
+
+<script src="lib/net.js"></script>
+<script src="lib/access.js"></script>
+<script src="lib/apps.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

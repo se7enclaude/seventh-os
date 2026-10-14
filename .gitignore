@@ -1,0 +1,5 @@
+.electron/
+dist/
+build/shot-*.png
+build/icons-check.png
+node_modules/

@@ -1,0 +1,14 @@
+{
+  "name": "seventh-os",
+  "productName": "Seventh OS",
+  "version": "1.0.0",
+  "description": "Seventh OS : toutes les applis se7en au même endroit (installer, ouvrir, mettre à jour, désinstaller).",
+  "main": "main.js",
+  "private": true,
+  "author": "se7en",
+  "scripts": {
+    "start": "node tools/run.js",
+    "build": "node tools/build.js",
+    "release": "node tools/release.js"
+  }
+}
