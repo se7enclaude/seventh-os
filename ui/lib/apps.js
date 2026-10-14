@@ -145,11 +145,46 @@
       const exe = portableExe(app);
       await run('taskkill.exe', ['/IM', app.exe, '/F']); // une copie ouverte bloquerait le remplacement
       fs.mkdirSync(path.dirname(exe), { recursive: true });
-      fs.copyFileSync(file, exe);
+      const stillRunning = await replaceExe(file, exe);
       await shortcuts(app, exe, true);
+      try { fs.unlinkSync(file); } catch (e) { /* gardé */ }
+      const st = await installed(app);
+      st.restartNeeded = stillRunning;
+      return st;
     }
     try { fs.unlinkSync(file); } catch (e) { /* gardé */ }
     return installed(app);
+  }
+
+  async function isRunning(exeName) {
+    const r = await run('tasklist.exe', ['/FI', 'IMAGENAME eq ' + exeName, '/NH']);
+    return r.out.toLowerCase().includes(exeName.toLowerCase());
+  }
+
+  // Remplace un .exe portable, même s'il tourne encore : une appli lancée en administrateur (se7en DualSense)
+  // ne peut pas être fermée d'ici. Un exécutable en cours ne peut pas être écrasé, mais il peut être renommé :
+  // l'ancien est mis de côté (.old, supprimé dès qu'il est libéré), le nouveau prend sa place.
+  // Renvoie true si l'ancienne version tourne toujours (à relancer pour passer à la nouvelle).
+  async function replaceExe(src, dest) {
+    const dir = path.dirname(dest);
+    // Restes d'une mise à jour précédente
+    for (const f of fs.readdirSync(dir)) {
+      if (/\.old$/i.test(f)) { try { fs.unlinkSync(path.join(dir, f)); } catch (e) { /* encore ouvert */ } }
+    }
+    for (let i = 0; i < 8; i++) {
+      try { fs.copyFileSync(src, dest); return false; } catch (e) { if (e.code !== 'EBUSY' && e.code !== 'EPERM') throw e; }
+      await new Promise(r => setTimeout(r, 400)); // le temps que la copie fermée libère le fichier
+    }
+    const old = dest + '.' + Date.now() + '.old';
+    fs.renameSync(dest, old);
+    try {
+      fs.copyFileSync(src, dest);
+    } catch (e) {
+      try { fs.renameSync(old, dest); } catch (err) { /* rien */ }
+      throw e;
+    }
+    try { fs.unlinkSync(old); } catch (e) { /* encore ouvert : supprimé à la prochaine installation */ }
+    return isRunning(path.basename(dest));
   }
 
   function shortcutPaths(app) {
@@ -191,6 +226,11 @@
     } else {
       const st = await installed(app);
       await run('taskkill.exe', ['/IM', app.exe, '/F']);
+      if (await isRunning(app.exe)) {
+        await new Promise(r => setTimeout(r, 800));
+        if (await isRunning(app.exe))
+          throw new Error(app.name + ' est ouverte en administrateur : quitte-la (icône près de l\'horloge › Quitter) puis réessaie');
+      }
       // Nettoyage propre par l'appli elle-même avant de la supprimer (ex. se7en DualSense : manette démasquée,
       // démarrage avec Windows retiré). Seulement si la version installée connaît cette commande.
       if (app.cleanup && st.installed && st.exe && fs.existsSync(st.exe) && !newer(app.cleanup.minVersion || '0', st.version || '0')) {

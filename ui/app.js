@@ -203,7 +203,8 @@ async function doInstall(app) {
   try {
     state.st[app.id] = await O.install(app, l, (s) => { state.busy[app.id] = Object.assign({}, state.busy[app.id], s); render(); });
     if (!state.st[app.id].installed) throw new Error('l\'installation n\'a pas abouti');
-    toast(app.name + ' ' + (state.st[app.id].version || l.version) + (wasInstalled ? ' : mise à jour faite.' : ' est installée.'));
+    toast(app.name + ' ' + (state.st[app.id].version || l.version) + (wasInstalled ? ' : mise à jour faite.' : ' est installée.')
+      + (state.st[app.id].restartNeeded ? ' Elle est encore ouverte : quitte-la et relance-la pour passer à la nouvelle version.' : ''));
   } catch (e) {
     toast(app.name + ' : ' + e.message, true);
     try { state.st[app.id] = await O.installed(app); } catch (err) { /* rien */ }
