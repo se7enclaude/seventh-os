@@ -64,6 +64,28 @@
    "exe": "se7en DualSense.exe",
    "shortcuts": ["programs", "desktop"],
    "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "0.6.2" }
+  },
+  {
+   "id": "se7en-voice",
+   "name": "se7en Voice",
+   "subtitle": "Changeur de voix · Discord · Jeux",
+   "tagline": "Change ta voix dans Discord, tes jeux et tout le PC.",
+   "accent": "#FFCB2E",
+   "description": [
+    "Un changeur de voix simple comme Voicemeeter, en beaucoup plus facile : ta voix passe par se7en Voice puis arrive dans Discord, tes jeux et tout Windows.",
+    "Voix plus grave en un slider, voix toutes prêtes (robot, alien, démon, radio…), effets (écho, réverb, égaliseur, voix pro), soundboard et raccourcis qui marchent même en jeu."
+   ],
+   "features": ["« Voix plus grave » qui reste naturelle", "12 voix prêtes + tes propres presets", "Écho, réverb, robot, radio, égaliseur", "Soundboard et raccourcis Ctrl+Alt en jeu"],
+   "requires": "Windows 10/11 · VB-CABLE (gratuit, l'appli explique comment l'installer)",
+   "keeps": "Tes presets, tes sons et tes réglages sont gardés.",
+   "repo": "se7enclaude/se7en-voice",
+   "private": false,
+   "kind": "portable",
+   "asset": "se7en-Voice.exe",
+   "installDir": "%LOCALAPPDATA%\\Programs\\se7en Voice",
+   "exe": "se7en Voice.exe",
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
   }
  ]
 }

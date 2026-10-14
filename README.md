@@ -8,6 +8,7 @@ Toutes les applis se7en au même endroit : chaque appli a sa fiche, et les bouto
 | se7en IA (se7en studio) | `se7en-ia-agent-after-effect` (privé) | installateur Inno Setup |
 | se7en Download | `se7en-download` | installateur Inno Setup |
 | se7en DualSense | `se7en-dualsense` | un seul `.exe`, copié dans `%LOCALAPPDATA%\Programs\se7en DualSense` |
+| se7en Voice | `se7en-voice` | un seul `.exe`, copié dans `%LOCALAPPDATA%\Programs\se7en Voice` |
 
 ## Pour tes amis
 
