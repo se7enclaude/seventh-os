@@ -153,6 +153,7 @@ function render() {
       h('span', { class: 'chip ' + v.chipKind }, v.chip),
       v.busy ? busyBox(v.busy) : h('div', { class: 'card-foot' },
         h('button', { class: 'btn link', onclick: (e) => { e.stopPropagation(); openSheet(app); } }, 'Détails'),
+        v.installed ? h('button', { class: 'btn link danger-link', title: 'Désinstaller ' + app.name, onclick: (e) => { e.stopPropagation(); askUninstall(app); } }, 'Désinstaller') : null,
         h('div', { class: 'grow' }),
         mainButton(app, v)));
   }));

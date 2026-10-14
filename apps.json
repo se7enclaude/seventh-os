@@ -62,7 +62,8 @@
    "asset": "se7en-DualSense.exe",
    "installDir": "%LOCALAPPDATA%\\Programs\\se7en DualSense",
    "exe": "se7en DualSense.exe",
-   "shortcuts": ["programs", "desktop"]
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "0.6.2" }
   }
  ]
 }

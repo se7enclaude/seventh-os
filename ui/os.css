@@ -59,6 +59,8 @@ body { background: #4A7880; color: var(--text); font: 500 13px/1.5 var(--font); 
 .btn.danger { background: rgba(226, 112, 107, 0.9); border-color: rgba(255, 255, 255, 0.4); }
 .btn.link { height: auto; padding: 4px 2px; background: none; border: 0; box-shadow: none; color: var(--text-2); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .btn.link:hover { color: #fff; background: none; }
+.btn.link.danger-link { color: var(--danger); text-decoration: none; }
+.btn.link.danger-link:hover { color: #fff; text-decoration: underline; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; color: #fff; font: 700 18px/1 var(--font); }
 .icon-btn:hover { background: rgba(255, 255, 255, 0.28); }
 .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }

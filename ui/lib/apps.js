@@ -189,7 +189,14 @@
         await new Promise(r => setTimeout(r, 1000));
       }
     } else {
+      const st = await installed(app);
       await run('taskkill.exe', ['/IM', app.exe, '/F']);
+      // Nettoyage propre par l'appli elle-même avant de la supprimer (ex. se7en DualSense : manette démasquée,
+      // démarrage avec Windows retiré). Seulement si la version installée connaît cette commande.
+      if (app.cleanup && st.installed && st.exe && fs.existsSync(st.exe) && !newer(app.cleanup.minVersion || '0', st.version || '0')) {
+        onStep && onStep({ phase: 'uninstall', detail: 'nettoyage' });
+        await Promise.race([run(st.exe, app.cleanup.args || []), new Promise(r => setTimeout(r, 90000))]);
+      }
       await recycle([expand(app.installDir)].concat(shortcutPaths(app)));
     }
     return installed(app);
