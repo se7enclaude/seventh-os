@@ -54,12 +54,12 @@ function iconOf(app) {
   if (fs.existsSync(cached)) return 'data:image/png;base64,' + fs.readFileSync(cached).toString('base64');
   return 'icons/seventh-os.png';
 }
-// icône d'une appli ajoutée au catalogue après cette version : prise dans le dépôt (icons/<id>.png)
+// icône d'une appli ajoutée au catalogue après cette version : prise dans le dépôt (icons/<id>.png),
+// revalidée à chaque lancement (ETag) : retéléchargée seulement si elle a changé sur main
 async function fetchIcon(app) {
   if (fs.existsSync(path.join(PATHS.root, 'ui', 'icons', app.id + '.png'))) return;
   const f = path.join(PATHS.data, 'icons', app.id + '.png');
-  if (fs.existsSync(f)) return;
-  try { await N.fetchTo('https://raw.githubusercontent.com/se7enclaude/seventh-os/main/ui/icons/' + encodeURIComponent(app.id) + '.png', f); render(); } catch (e) { /* icône par défaut */ }
+  try { if (await N.fetchTo('https://raw.githubusercontent.com/se7enclaude/seventh-os/main/ui/icons/' + encodeURIComponent(app.id) + '.png', f, { etagFile: f + '.etag' })) render(); } catch (e) { /* icône en cache ou par défaut */ }
 }
 
 // ------------------------------------------------------------------ code d'accès

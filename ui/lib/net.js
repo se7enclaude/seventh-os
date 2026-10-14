@@ -4,6 +4,7 @@
  *   S7Net.download(token, assetApiUrl, file, { size, sha256, onProgress, signal })
  *       fichier d'une release : l'API répond par une redirection vers une adresse signée, suivie SANS la clé ;
  *       reprise (Range) d'un .part interrompu ; empreinte SHA-256 vérifiée avant de renommer.
+ *   S7Net.fetchTo(url, file, { etagFile })                   -> file, ou null si inchangé (304 : file gardé tel quel)
  * Node (https) plutôt que fetch : flux direct vers le disque (morceaux de 1,9 Go) et en-têtes maîtrisés. */
 (function (root) {
   'use strict';
@@ -73,16 +74,20 @@
   }
 
   // Fichier public (browser_download_url d'un dépôt public) : redirections suivies, progression, empreinte vérifiée.
+  // etagFile : revalidation (If-None-Match) d'un fichier déjà là ; l'ETag reçu y est gardé pour la fois suivante.
   async function fetchTo(url, file, opts) {
     const o = opts || {};
     const part = file + '.part';
     fs.mkdirSync(path.dirname(file), { recursive: true });
+    const h = { Accept: 'application/octet-stream' };
+    if (o.etagFile && fs.existsSync(file)) { try { h['If-None-Match'] = fs.readFileSync(o.etagFile, 'utf8').trim(); } catch (e) { /* pas encore d'ETag */ } }
     let u = url, res = null;
     for (let i = 0; i < 6; i++) {
-      res = await request(u, { Accept: 'application/octet-stream' }, Object.assign({ timeout: 60000 }, o));
+      res = await request(u, h, Object.assign({ timeout: 60000 }, o));
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) { res.resume(); u = new URL(res.headers.location, u).toString(); continue; }
       break;
     }
+    if (res.statusCode === 304) { res.resume(); return null; }
     if (res.statusCode !== 200) throw httpError(res, await body(res), 'téléchargement');
     const total = o.size || Number(res.headers['content-length'] || 0);
     await new Promise((resolve, reject) => {
@@ -105,6 +110,7 @@
     }
     try { fs.unlinkSync(file); } catch (e) { /* absent */ }
     fs.renameSync(part, file);
+    if (o.etagFile) { try { if (res.headers.etag) fs.writeFileSync(o.etagFile, res.headers.etag); else fs.unlinkSync(o.etagFile); } catch (e) { /* revalidation au prochain coup */ } }
     return file;
   }
 
