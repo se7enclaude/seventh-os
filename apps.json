@@ -88,24 +88,24 @@
    "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
   },
   {
-   "id": "se7en-relais",
-   "name": "se7en Relais",
+   "id": "se7en-vision",
+   "name": "se7en Vision",
    "subtitle": "Ton PC depuis ton iPhone",
    "tagline": "Contrôle ton PC depuis ton téléphone, où que tu sois.",
    "accent": "#7A64F0",
    "description": [
-    "Ouvre se7en Relais sur le PC : un QR code, un lien unique et un code à 6 chiffres s'affichent. Scanne, entre le code dans Safari, et tu vois l'écran du PC en direct depuis ton iPhone, en Wi-Fi comme en 4G.",
-    "Souris en mode toucher ou trackpad, clic gauche et droit, molette, glisser-déposer, clavier avec accents et raccourcis. Le lien et le code changent à chaque ouverture : prête-le à tes amis sans risque."
+    "Ouvre se7en Vision sur le PC : un QR code, un lien unique et un code à 6 chiffres s'affichent. Scanne, entre le code dans Safari, et tu vois l'écran du PC en direct depuis ton iPhone, en Wi-Fi comme en 4G.",
+    "Trois façons de piloter la souris : toucher l'écran, trackpad, ou joystick façon manette (pouce gauche pour bouger, gros bouton « Clic » : toucher, double toucher, rester appuyé pour glisser). Clavier avec accents et raccourcis. Le lien et le code changent à chaque ouverture : prête-le à tes amis sans risque."
    ],
-   "features": ["Écran du PC en direct sur l'iPhone", "Souris : toucher, trackpad, glisser-déposer", "Clavier, Ctrl/Alt/Win et raccourcis", "Nouveau lien et nouveau code à chaque ouverture"],
+   "features": ["Écran du PC en direct sur l'iPhone", "Mode Joystick : la souris au pouce, comme une manette", "Toucher, trackpad, glisser-déposer, molette", "Clavier, Ctrl/Alt/Win et raccourcis", "Nouveau lien et nouveau code à chaque ouverture"],
    "requires": "Windows 10/11 · un iPhone (ou n'importe quel téléphone) avec Internet",
-   "keeps": "Rien à garder : un nouveau lien est créé à chaque ouverture.",
-   "repo": "se7enclaude/se7en-relais",
+   "keeps": "Tes réglages sont sur ton téléphone : rien à garder sur le PC.",
+   "repo": "se7enclaude/se7en-vision",
    "private": false,
    "kind": "portable",
-   "asset": "se7en-Relais.exe",
-   "installDir": "%LOCALAPPDATA%\\Programs\\se7en Relais",
-   "exe": "se7en Relais.exe",
+   "asset": "se7en-Vision.exe",
+   "installDir": "%LOCALAPPDATA%\\Programs\\se7en Vision",
+   "exe": "se7en Vision.exe",
    "shortcuts": ["programs", "desktop"],
    "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
   }
