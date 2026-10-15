@@ -86,6 +86,28 @@
    "exe": "se7en Voice.exe",
    "shortcuts": ["programs", "desktop"],
    "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
+  },
+  {
+   "id": "se7en-relais",
+   "name": "se7en Relais",
+   "subtitle": "Ton PC depuis ton iPhone",
+   "tagline": "Contrôle ton PC depuis ton téléphone, où que tu sois.",
+   "accent": "#7A64F0",
+   "description": [
+    "Ouvre se7en Relais sur le PC : un QR code, un lien unique et un code à 6 chiffres s'affichent. Scanne, entre le code dans Safari, et tu vois l'écran du PC en direct depuis ton iPhone, en Wi-Fi comme en 4G.",
+    "Souris en mode toucher ou trackpad, clic gauche et droit, molette, glisser-déposer, clavier avec accents et raccourcis. Le lien et le code changent à chaque ouverture : prête-le à tes amis sans risque."
+   ],
+   "features": ["Écran du PC en direct sur l'iPhone", "Souris : toucher, trackpad, glisser-déposer", "Clavier, Ctrl/Alt/Win et raccourcis", "Nouveau lien et nouveau code à chaque ouverture"],
+   "requires": "Windows 10/11 · un iPhone (ou n'importe quel téléphone) avec Internet",
+   "keeps": "Rien à garder : un nouveau lien est créé à chaque ouverture.",
+   "repo": "se7enclaude/se7en-relais",
+   "private": false,
+   "kind": "portable",
+   "asset": "se7en-Relais.exe",
+   "installDir": "%LOCALAPPDATA%\\Programs\\se7en Relais",
+   "exe": "se7en Relais.exe",
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
   }
  ]
 }
