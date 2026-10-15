@@ -70,13 +70,13 @@
    "name": "se7en Voice",
    "subtitle": "Voix · Mixeur · Soundboard",
    "tagline": "Change ta voix et gère tout le son de ton PC, au même endroit.",
-   "accent": "#DDF247",
+   "accent": "#7A64F0",
    "description": [
     "Une centrale audio pour streamer, jouer et discuter : ta voix passe par se7en Voice puis arrive dans Discord, tes jeux et tout Windows.",
-    "48 voix prêtes (Dark Vador, Ghostface, autotune, voix de fille…), effets pro avec réduction de bruit, table de mixage par appli (jeux, musique, Discord) avec ducking, soundboard, enregistrement et push-to-talk."
+    "48 voix prêtes (Dark Vador, Ghostface, autotune, voix de fille…), effets pro avec réduction de bruit, table de mixage par appli (jeux, musique, Discord) avec ducking, soundboard, enregistrement et push-to-talk. Thème clair ou sombre."
    ],
    "features": ["48 voix prêtes + tes propres presets", "Réduction de bruit, autotune, timbre, égaliseur…", "Table de mixage : jeux, musique, Discord", "Soundboard, enregistrement et push-to-talk"],
-   "requires": "Windows 10/11 · VB-CABLE (gratuit, l'appli explique comment l'installer)",
+   "requires": "Windows 10/11 · Seven Microphone (gratuit, s'installe depuis l'appli)",
    "keeps": "Tes presets, tes sons et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-voice",
    "private": false,
