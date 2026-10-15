@@ -47,19 +47,19 @@ function toast(msg, err) {
   $('#toasts').append(t);
   setTimeout(() => t.remove(), err ? 9000 : 5000);
 }
+// icône d'une appli : celle du dépôt (icons/<id>.png sur main) gagne sur celle livrée avec le hub,
+// pour qu'un nouveau logo arrive sans nouvelle version de Seventh OS
 function iconOf(app) {
-  const local = path.join(PATHS.root, 'ui', 'icons', app.id + '.png');
-  if (fs.existsSync(local)) return 'icons/' + app.id + '.png';
   const cached = path.join(PATHS.data, 'icons', app.id + '.png');
   if (fs.existsSync(cached)) return 'data:image/png;base64,' + fs.readFileSync(cached).toString('base64');
+  const local = path.join(PATHS.root, 'ui', 'icons', app.id + '.png');
+  if (fs.existsSync(local)) return 'icons/' + app.id + '.png';
   return 'icons/seventh-os.png';
 }
-// icône d'une appli ajoutée au catalogue après cette version : prise dans le dépôt (icons/<id>.png),
 // revalidée à chaque lancement (ETag) : retéléchargée seulement si elle a changé sur main
 async function fetchIcon(app) {
-  if (fs.existsSync(path.join(PATHS.root, 'ui', 'icons', app.id + '.png'))) return;
   const f = path.join(PATHS.data, 'icons', app.id + '.png');
-  try { if (await N.fetchTo('https://raw.githubusercontent.com/se7enclaude/seventh-os/main/ui/icons/' + encodeURIComponent(app.id) + '.png', f, { etagFile: f + '.etag' })) render(); } catch (e) { /* icône en cache ou par défaut */ }
+  try { if (await N.fetchTo('https://raw.githubusercontent.com/se7enclaude/seventh-os/main/ui/icons/' + encodeURIComponent(app.id) + '.png', f, { etagFile: f + '.etag' })) render(); } catch (e) { /* icône en cache ou livrée */ }
 }
 
 // ------------------------------------------------------------------ code d'accès
