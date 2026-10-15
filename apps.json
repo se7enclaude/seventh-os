@@ -107,7 +107,8 @@
    "installDir": "%LOCALAPPDATA%\\Programs\\se7en Vision",
    "exe": "se7en Vision.exe",
    "shortcuts": ["programs", "desktop"],
-   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" },
+   "replaces": [{ "name": "se7en Relais", "installDir": "%LOCALAPPDATA%\\Programs\\se7en Relais", "exe": "se7en Relais.exe" }]
   }
  ]
 }

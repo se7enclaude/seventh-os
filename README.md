@@ -32,6 +32,7 @@ Champs de chaque entrée :
 - pour `portable` :
   - `asset` : le nom du `.exe` dans la release ; l'empreinte se lit dans les notes, sous la forme « SHA-256 : … » ;
   - `installDir`, `exe`, `shortcuts`.
+  - `replaces` (si l'appli change de nom) : la liste de ses anciens emplacements `{ name, installDir, exe }`. Une ancienne installation est reconnue, la mise à jour installe sous le nouveau nom et met l'ancienne à la Corbeille.
 
 ## Développement
 

@@ -118,8 +118,9 @@ function view(app) {
   const v = { st, l, busy, installed: !!(st && st.installed), update: false, chip: '', chipKind: '' };
   if (!st) { v.chip = 'Vérification…'; return v; }
   if (v.installed) {
-    v.update = !!(l && l.version && st.version && O.newer(l.version, st.version));
-    v.chip = v.update ? 'Mise à jour ' + l.version + ' disponible' : 'Installée · ' + (st.version || '?');
+    // Installée sous un ancien nom : toujours à mettre à jour (même version), pour passer au nouveau nom.
+    v.update = !!(l && l.version && st.version && (O.newer(l.version, st.version) || (st.formerName && l.asset)));
+    v.chip = v.update ? (st.formerName ? 'Nouveau nom · mise à jour ' + l.version : 'Mise à jour ' + l.version + ' disponible') : 'Installée · ' + (st.version || '?');
     v.chipKind = v.update ? 'up' : 'ok';
   } else {
     v.chip = l ? 'Pas installée · ' + l.version + (l.size ? ' · ' + size(l.size) : '') : (state.err[app.id] ? 'Pas installée · ' + state.err[app.id] : 'Pas installée');
@@ -198,12 +199,15 @@ async function doInstall(app) {
   const l = state.latest[app.id];
   if (!l || !l.asset) { toast('Rien à installer pour ' + app.name + ' (' + (state.err[app.id] || 'pas de fichier publié') + ').', true); return; }
   const wasInstalled = view(app).installed;
+  const formerName = wasInstalled && state.st[app.id] && state.st[app.id].formerName;
   state.busy[app.id] = { phase: 'prep' };
   render();
   try {
     state.st[app.id] = await O.install(app, l, (s) => { state.busy[app.id] = Object.assign({}, state.busy[app.id], s); render(); });
     if (!state.st[app.id].installed) throw new Error('l\'installation n\'a pas abouti');
-    toast(app.name + ' ' + (state.st[app.id].version || l.version) + (wasInstalled ? ' : mise à jour faite.' : ' est installée.')
+    toast((formerName ? formerName + ' devient ' + app.name + ' ' + (state.st[app.id].version || l.version) + ' : mise à jour faite.'
+      : app.name + ' ' + (state.st[app.id].version || l.version) + (wasInstalled ? ' : mise à jour faite.' : ' est installée.'))
+      + (state.st[app.id].formerLeft ? ' L\'ancienne version (' + state.st[app.id].formerLeft.join(', ') + ') est encore ouverte : ferme-la puis supprime son dossier.' : '')
       + (state.st[app.id].restartNeeded ? ' Elle est encore ouverte : quitte-la et relance-la pour passer à la nouvelle version.' : ''));
   } catch (e) {
     toast(app.name + ' : ' + e.message, true);

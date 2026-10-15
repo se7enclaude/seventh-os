@@ -9,7 +9,10 @@
  *    (%LOCALAPPDATA%\Programs\se7en DualSense), avec ses raccourcis ; version lue dans le .exe.
  * Dernière version : release « latest » du dépôt de l'appli (avec la clé débloquée par le code si le dépôt est privé) ;
  * son latest.json donne le fichier et son empreinte SHA-256 ; sinon l'empreinte est lue dans les notes (« SHA-256 : … »).
- * Désinstallation d'une appli portable : son dossier et ses raccourcis partent à la Corbeille (jamais effacés). */
+ * Désinstallation d'une appli portable : son dossier et ses raccourcis partent à la Corbeille (jamais effacés).
+ * Appli portable renommée : « replaces » liste ses anciens emplacements ({ name, installDir, exe }). Une ancienne
+ * installation compte comme cette appli (avec sa version) ; la mise à jour installe sous le nouveau nom
+ * puis met l'ancienne à la Corbeille (ex. se7en Relais → se7en Vision). */
 (function (root) {
   'use strict';
   const fs = require('fs');
@@ -78,6 +81,16 @@
   }
   function portableExe(app) { return path.join(expand(app.installDir), app.exe); }
 
+  // Les anciens noms d'une appli portable renommée, sous forme d'applis à part entière (même nettoyage).
+  function formerApps(app) {
+    if (app.kind !== 'portable' || !Array.isArray(app.replaces)) return [];
+    return app.replaces.filter(r => r && r.installDir && r.exe).map(r => Object.assign({}, app, {
+      name: r.name || app.name, installDir: r.installDir, exe: r.exe,
+      shortcuts: r.shortcuts || app.shortcuts, cleanup: 'cleanup' in r ? r.cleanup : app.cleanup, replaces: undefined,
+    }));
+  }
+  const formerInstalled = (app) => formerApps(app).filter(old => fs.existsSync(portableExe(old)));
+
   // -> { installed: bool, version, exe }
   async function installed(app) {
     if (app.kind === 'inno') {
@@ -87,8 +100,10 @@
       return { installed: true, version: clean(v.DisplayVersion), exe: dir ? path.join(dir, app.exe) : null, uninstall: v.UninstallString || null };
     }
     const exe = portableExe(app);
-    if (!fs.existsSync(exe)) return { installed: false };
-    return { installed: true, version: await exeVersion(exe), exe };
+    if (fs.existsSync(exe)) return { installed: true, version: await exeVersion(exe), exe };
+    const old = formerInstalled(app)[0];
+    if (old) { const oldExe = portableExe(old); return { installed: true, version: await exeVersion(oldExe), exe: oldExe, formerName: old.name }; }
+    return { installed: false };
   }
 
   // ---------------------------------------------------------------- dernière version
@@ -148,8 +163,14 @@
       const stillRunning = await replaceExe(file, exe);
       await shortcuts(app, exe, true);
       try { fs.unlinkSync(file); } catch (e) { /* gardé */ }
+      // Renommée : l'ancienne version (dossier, raccourcis, données) part à la Corbeille.
+      const leftovers = [];
+      for (const old of formerInstalled(app)) {
+        try { await uninstall(old); } catch (e) { leftovers.push(old.name); }
+      }
       const st = await installed(app);
       st.restartNeeded = stillRunning;
+      if (leftovers.length) st.formerLeft = leftovers;
       return st;
     }
     try { fs.unlinkSync(file); } catch (e) { /* gardé */ }
@@ -224,6 +245,11 @@
         await new Promise(r => setTimeout(r, 1000));
       }
     } else {
+      // Seule l'ancienne version (avant renommage) est là : c'est elle qu'on retire.
+      if (!fs.existsSync(portableExe(app)) && formerInstalled(app).length) {
+        for (const old of formerInstalled(app)) await uninstall(old, onStep);
+        return installed(app);
+      }
       const st = await installed(app);
       await run('taskkill.exe', ['/IM', app.exe, '/F']);
       if (await isRunning(app.exe)) {
