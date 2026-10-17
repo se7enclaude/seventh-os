@@ -94,8 +94,8 @@
    "tagline": "Contrôle ton PC depuis ton téléphone, où que tu sois.",
    "accent": "#7A64F0",
    "description": [
-    "Ouvre se7en Vision sur le PC : un QR code, un lien unique et un code à 6 chiffres s'affichent. Scanne, entre le code dans Safari, et tu vois l'écran du PC en direct depuis ton iPhone, en Wi-Fi comme en 4G.",
-    "Trois façons de piloter la souris : toucher l'écran, trackpad, ou joystick façon manette (pouce gauche pour bouger, gros bouton « Clic » : toucher, double toucher, rester appuyé pour glisser). Clavier avec accents et raccourcis. Le lien et le code changent à chaque ouverture : prête-le à tes amis sans risque."
+    "Ouvre se7en Vision sur le PC et scanne le QR code avec ton iPhone : tu es connecté tout de suite, sans rien taper, et tu vois l'écran du PC en direct, en Wi-Fi comme en 4G. Ton code à 6 chiffres, choisi une fois, sert pour le lien copié.",
+    "Trois façons de piloter la souris : toucher l'écran, trackpad, ou joystick façon manette (pouce gauche pour bouger, gros bouton « Clic » : toucher, double toucher, rester appuyé pour glisser). Clavier avec accents et raccourcis. Le lien change à chaque ouverture et chaque QR code ne sert qu'une fois."
    ],
    "features": ["Écran du PC en direct sur l'iPhone", "Mode Joystick : la souris au pouce, comme une manette", "Toucher, trackpad, glisser-déposer, molette", "Clavier, Ctrl/Alt/Win et raccourcis", "Nouveau lien et nouveau code à chaque ouverture"],
    "requires": "Windows 10/11 · un iPhone (ou n'importe quel téléphone) avec Internet",
