@@ -117,10 +117,10 @@
    "tagline": "Une rediff de stream → tes meilleurs clips TikTok, tout seul.",
    "accent": "#22D3E6",
    "description": [
-    "Donne une longue vidéo ou le lien d'une rediff (Twitch, YouTube, Kick…) : se7en Clip trouve tout seul les meilleurs moments grâce à la transcription, aux pics de son, aux réactions et au chat.",
+    "Donne une longue vidéo ou le lien d'une rediff (Twitch, YouTube, Kick, Patreon…) : se7en Clip trouve tout seul les meilleurs moments grâce à la transcription, aux pics de son, aux réactions et au chat.",
     "Chaque clip sort en vertical 9:16 avec la cam en haut et le jeu en bas, ou le visage suivi, et des sous-titres mot par mot. Titre, description et hashtags sont écrits pour toi. Tout tourne sur ton PC, sans abonnement."
    ],
-   "features": ["Moments forts trouvés par une IA locale", "Cam + jeu ou visage suivi en 9:16", "Sous-titres mot par mot (TikTok, Hormozi…)", "Titres et hashtags prêts à poster"],
+   "features": ["Moments forts trouvés par une IA locale", "Cam + jeu, cam + Discord ou visage suivi en 9:16", "Sous-titres mot par mot (TikTok, Hormozi…)", "Nombre de clips selon la durée, liens Patreon"],
    "requires": "Windows 10/11 · carte graphique conseillée · ~6 Go téléchargés au premier projet (IA)",
    "keeps": "Tes projets, tes clips et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-clip",
