@@ -130,6 +130,28 @@
    "manifestKey": "setup",
    "uninstallKey": "{77645D82-53E5-42FA-9CE0-D6B724BAB72B}_is1",
    "exe": "se7en-clip.exe"
+  },
+  {
+   "id": "se7en-autoclick",
+   "name": "se7en Autoclick",
+   "subtitle": "Autoclic · Macros",
+   "tagline": "Clique et rejoue tes gestes en boucle pour farmer.",
+   "accent": "#3DFF8C",
+   "description": [
+    "Un autoclic ultra précis, de 1 clic par minute à 1 000 clics par seconde, entièrement réglable : bouton de souris ou touche du clavier, vitesse, aléatoire, points à l'écran, raccourci au choix.",
+    "Et un enregistreur de macros pour farmer sur Roblox : F9 pour enregistrer tes touches, tes clics et ta caméra, F9 pour arrêter, F10 pour tout rejouer à l'identique, en boucle."
+   ],
+   "features": ["Autoclic jusqu'à 1 000 clics/s, sans dérive", "Macros clavier + souris + caméra, rejouées en boucle", "Tous les raccourcis réglables (touche, combinaison, souris)", "Arrêt d'urgence et pastille d'état par-dessus le jeu"],
+   "requires": "Windows 10/11",
+   "keeps": "Tes macros et tes réglages sont gardés.",
+   "repo": "se7enclaude/se7en-autoclick",
+   "private": false,
+   "kind": "portable",
+   "asset": "se7en-Autoclick.exe",
+   "installDir": "%LOCALAPPDATA%\\Programs\\se7en Autoclick",
+   "exe": "se7en Autoclick.exe",
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
   }
  ]
 }
