@@ -141,7 +141,7 @@
     "Un autoclic ultra précis, de 1 clic par minute à 1 000 clics par seconde, entièrement réglable : bouton de souris ou touche du clavier, vitesse, aléatoire, points à l'écran, raccourci au choix.",
     "Et un enregistreur de macros pour farmer sur Roblox : F9 pour enregistrer tes touches, tes clics et ta caméra, F9 pour arrêter, F10 pour tout rejouer à l'identique, en boucle."
    ],
-   "features": ["Autoclic jusqu'à 1 000 clics/s, sans dérive", "Macros clavier + souris + caméra, rejouées en boucle", "Tous les raccourcis réglables (touche, combinaison, souris)", "Arrêt d'urgence et pastille d'état par-dessus le jeu"],
+   "features": ["Autoclic jusqu'à 1 000 clics/s, sans dérive", "Macros clavier + souris + caméra, enchaînées et en boucle", "Anti-AFK Roblox et déclencheur couleur", "Éditeur de macros, raccourcis tous réglables"],
    "requires": "Windows 10/11",
    "keeps": "Tes macros et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-autoclick",
