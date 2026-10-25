@@ -163,7 +163,7 @@
     "Importe un film ou une vidéo (fichier ou lien) : une IA passe sur chaque image et repère les parties intimes visibles (poitrines, sexes, fesses), puis les floute en suivant leurs mouvements. Le reste de l'image ne bouge pas.",
     "Avant l'export, tu vérifies tout sur une frise : aperçu flouté, fausses détections retirées en un clic, zones ajoutées à la main, sensibilité et marge réglables. Export rapide sur la carte graphique avec le son d'origine. Tout tourne sur ton PC."
    ],
-   "features": ["Détection image par image sur la carte graphique", "Flou, pixels ou bande noire, en ovale ou rectangle", "Frise de vérification et zones à la main", "Export NVENC avec le son d'origine"],
+   "features": ["Détection image par image sur la carte graphique", "Suivi visuel : la zone reste floutée quand ça bouge", "Zones à la main qui suivent toutes seules, raccourcis clavier", "Flou, pixels ou noir · export NVENC avec le son d'origine"],
    "requires": "Windows 10/11 · carte graphique conseillée (NVIDIA, AMD ou Intel)",
    "keeps": "Tes projets et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-censored",
