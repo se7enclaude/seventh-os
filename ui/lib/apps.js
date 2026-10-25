@@ -119,8 +119,30 @@
     return N().fetchTo(asset.browser_download_url, file, opts);
   }
 
+  // Dépôt public : sans l'API GitHub (quota de 60 demandes / heure sans clé, vite épuisé quand on rouvre le hub).
+  // L'étiquette vient de la redirection de /releases/latest ; latest.json, ou l'empreinte écrite dans la page de la
+  // publication pour une appli portable, sont des fichiers publics.
+  async function latestPublic(app) {
+    const tag = await N().latestTag(app.repo);
+    const base = 'https://github.com/' + app.repo + '/releases/download/' + encodeURIComponent(tag) + '/';
+    const asset = (name, size) => ({ name, size: size || null, browser_download_url: base + encodeURIComponent(name) });
+    if (app.manifest) {
+      const m = JSON.parse(await N().text(base + encodeURIComponent(app.manifest)));
+      const e = m[app.manifestKey] || {};
+      const a = e.name ? asset(e.name, e.size) : null;
+      return { version: clean(m.version) || clean(tag), notes: m.notes || '', published: m.published || null, tag, asset: a, size: a ? a.size : null, sha256: e.sha256 || null };
+    }
+    const page = await N().text('https://github.com/' + app.repo + '/releases/tag/' + encodeURIComponent(tag));
+    const m = page.match(/SHA-?256\s*:\s*(?:<[^>]+>\s*)*([0-9a-f]{64})/i);
+    if (!m) throw new Error('empreinte introuvable dans la page de ' + tag);
+    return { version: clean(tag), notes: '', published: null, tag, asset: asset(app.asset), size: null, sha256: m[1].toLowerCase() };
+  }
+
   // -> { version, notes, published, asset, size, sha256 }
   async function latest(app) {
+    if (!app.private) {
+      try { return await latestPublic(app); } catch (e) { /* page de GitHub changée : l'API, comme avant */ }
+    }
     const token = tokenFor(app);
     const rel = await N().api(token, '/repos/' + app.repo + '/releases/latest');
     const assets = rel.assets || [];

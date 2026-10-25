@@ -38,6 +38,11 @@
   function httpError(res, text, what) {
     const e = new Error((what || 'GitHub') + ' : erreur ' + res.statusCode + (text ? ' (' + String(text).slice(0, 160) + ')' : ''));
     e.status = res.statusCode;
+    // quota de l'API sans clé (60 / heure par connexion) épuisé : GitHub répond 403 ou 429
+    if ((res.statusCode === 403 || res.statusCode === 429) && res.headers['x-ratelimit-remaining'] === '0') {
+      e.rateLimited = true;
+      e.reset = Number(res.headers['x-ratelimit-reset'] || 0) * 1000 || null;
+    }
     e.expires = res.headers['github-authentication-token-expiration'] || null;
     return e;
   }
@@ -64,6 +69,16 @@
       return t;
     }
     throw new Error('trop de redirections');
+  }
+
+  // Dépôt public : étiquette de la dernière publication, lue sur github.com (redirection de /releases/latest),
+  // sans passer par l'API, donc sans son quota.
+  async function latestTag(repo) {
+    const res = await request('https://github.com/' + repo + '/releases/latest', {});
+    res.resume();
+    const m = String(res.headers.location || '').match(/\/releases\/tag\/([^/?#]+)$/);
+    if (!m) { const e = new Error('dernière version introuvable (' + res.statusCode + ')'); e.status = res.statusCode; throw e; }
+    return decodeURIComponent(m[1]);
   }
 
   function sha256File(file) {
@@ -159,7 +174,7 @@
     return file;
   }
 
-  const api_ = { api, text, download, fetchTo, sha256File };
+  const api_ = { api, text, download, fetchTo, sha256File, latestTag };
   root.S7Net = api_;
   if (typeof module !== 'undefined' && module.exports) module.exports = api_;
 })(typeof window !== 'undefined' ? window : globalThis);

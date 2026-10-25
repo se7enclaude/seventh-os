@@ -91,7 +91,10 @@ async function refreshApp(app) {
   try { state.st[app.id] = await O.installed(app); } catch (e) { state.st[app.id] = { installed: false }; }
   render();
   try { state.latest[app.id] = await O.latest(app); delete state.err[app.id]; }
-  catch (e) { state.err[app.id] = e.status === 401 || e.status === 403 ? 'accès refusé (code à refaire ?)' : (e.why === 'locked' ? 'code d\'accès nécessaire' : 'hors ligne'); }
+  catch (e) {
+    state.err[app.id] = e.rateLimited ? 'GitHub limite les vérifications, réessaie ' + (e.reset ? 'vers ' + new Date(e.reset).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'dans une heure')
+      : e.status === 401 || e.status === 403 ? 'accès refusé (code à refaire ?)' : (e.why === 'locked' ? 'code d\'accès nécessaire' : 'hors ligne');
+  }
   render();
 }
 async function load() {
