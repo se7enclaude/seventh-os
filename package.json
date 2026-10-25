@@ -1,7 +1,7 @@
 {
   "name": "seventh-os",
   "productName": "Seventh OS",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Seventh OS : toutes les applis se7en au même endroit (installer, ouvrir, mettre à jour, désinstaller).",
   "main": "main.js",
   "private": true,

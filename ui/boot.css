@@ -1,0 +1,32 @@
+/* Seventh OS — animation de lancement « la constellation » (voir boot.js). */
+.boot { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; cursor: pointer; overflow: hidden;
+  background: radial-gradient(60% 60% at 50% 45%, #22333a 0%, #121a1d 60%, #0a0f11 100%); transition: opacity .5s ease; }
+.boot.out { opacity: 0; pointer-events: none; }
+.boot-orbit { position: relative; width: 340px; height: 340px; }
+.boot-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .08); animation: boot-ring 1.4s .9s ease-in forwards; }
+.boot-ring.r2 { inset: 60px; border-color: rgba(233, 161, 154, .14); }
+/* each app icon starts on its orbit, turns, then falls into the centre */
+.boot-app { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 14px; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .45); opacity: 0;
+  animation: boot-orbit 1.25s calc(var(--i) * 45ms) cubic-bezier(.45, 0, .2, 1) forwards; }
+.boot-app img { width: 100%; height: 100%; display: block; }
+.boot-core { position: absolute; left: 50%; top: 50%; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 28px; overflow: hidden; opacity: 0; transform: scale(.4);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .25), 0 20px 60px rgba(0, 0, 0, .5), 0 0 80px rgba(233, 161, 154, .35); animation: boot-core .6s 1.25s cubic-bezier(.34, 1.56, .64, 1) forwards; }
+.boot-core img { width: 100%; height: 100%; display: block; }
+.boot-flash { position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%; background: #fff; opacity: 0; animation: boot-flash .55s 1.2s ease-out forwards; }
+.boot-title { font: 400 44px/1 'Anton', Impact, sans-serif; letter-spacing: .12em; color: #fff; height: 46px; }
+.boot-title i { font-style: normal; color: #E9A19A; }
+.boot-title span { display: inline-block; opacity: 0; transform: translateY(12px); animation: boot-letter .35s calc(1.45s + var(--i) * 45ms) cubic-bezier(.22, 1, .36, 1) forwards; }
+.boot-sub { font: 500 13px/1.4 'Manrope', system-ui, sans-serif; color: rgba(255, 255, 255, .55); opacity: 0; animation: boot-fade .5s 2s forwards; }
+@keyframes boot-orbit {
+  0% { opacity: 0; transform: rotate(var(--a)) translateX(240px) rotate(calc(-1 * var(--a))) scale(.6); }
+  20% { opacity: 1; }
+  70% { opacity: 1; transform: rotate(calc(var(--a) + 140deg)) translateX(150px) rotate(calc(-1 * var(--a) - 140deg)) scale(1); }
+  100% { opacity: 0; transform: rotate(calc(var(--a) + 200deg)) translateX(0) rotate(calc(-1 * var(--a) - 200deg)) scale(.3); }
+}
+@keyframes boot-core { to { opacity: 1; transform: none; } }
+@keyframes boot-flash { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(18); } }
+@keyframes boot-ring { to { opacity: 0; transform: scale(.4); } }
+@keyframes boot-letter { to { opacity: 1; transform: none; } }
+@keyframes boot-fade { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .boot * { animation-duration: .01s !important; animation-delay: 0s !important; } }

@@ -173,6 +173,27 @@
    "manifestKey": "setup",
    "uninstallKey": "{CB283103-F57B-4DE4-9203-954EB272FD92}_is1",
    "exe": "se7en-censored.exe"
+  },
+  {
+   "id": "se7en-iptv-player",
+   "name": "se7en IPTV Player",
+   "subtitle": "Lecteur IPTV",
+   "tagline": "Ton abonnement Xtream Codes ou ta liste M3U, en grand, avec le guide des programmes.",
+   "accent": "#EE2E37",
+   "description": [
+    "Ajoute ton abonnement Xtream Codes (serveur, utilisateur, mot de passe) ou ta liste M3U : se7en Stream range les chaînes, les films et les séries, avec le guide des programmes sur 7 jours. L'appli ne fournit aucune chaîne : elle lit l'abonnement que tu as déjà.",
+    "Zapping instantané au clavier, reprise des films et des séries là où tu t'es arrêté, replay et enregistrements sans dépasser les connexions de ton abonnement, profils avec contrôle parental. Lecteur mpv avec décodage matériel, interface en verre liquide."
+   ],
+   "features": ["TV en direct et guide des programmes en grille", "Films et séries avec reprise et épisode suivant", "Replay et enregistrements, rappels avant un programme", "Profils, contrôle parental, identifiants chiffrés"],
+   "requires": "Windows 10/11 · un abonnement IPTV (Xtream Codes ou M3U)",
+   "keeps": "Tes abonnements, favoris et réglages sont gardés.",
+   "repo": "se7enclaude/se7en-iptv-player",
+   "private": false,
+   "kind": "inno",
+   "manifest": "latest.json",
+   "manifestKey": "setup",
+   "uninstallKey": "{36AAF9AA-EE0E-4EA3-9EE3-A0AD332F394C}_is1",
+   "exe": "se7en-iptv-player.exe"
   }
  ]
 }
