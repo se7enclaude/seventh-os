@@ -11,13 +11,7 @@
     "Le logiciel d'edit d'anime connecté à After Effects : une bibliothèque de plus de 2 000 effets, CC, transitions et scènes tirés de vrais projets d'editeurs, avec un aperçu vidéo de chacun.",
     "« Tout faire pour moi » : tu donnes tes clips et ta musique, il monte l'edit dans le style du projet choisi (coupes sur le son, effets, scènes sur les drops, sons), directement dans ta compo."
    ],
-   "features": [
-    "Bibliothèque d'effets avec aperçus vidéo",
-    "AI Edit : « Tout faire pour moi »",
-    "SFX placés sur l'action et la musique",
-    "Paroles calées sur la voix",
-    "Export MP4"
-   ],
+   "features": ["Bibliothèque d'effets avec aperçus vidéo", "AI Edit : « Tout faire pour moi »", "SFX placés sur l'action et la musique", "Paroles calées sur la voix", "Export MP4"],
    "requires": "Windows 10/11 · After Effects 2022 ou plus récent",
    "keeps": "Tes sons, tes projets de référence et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-ia-agent-after-effect",
@@ -38,12 +32,7 @@
     "Le tout-en-un pour tes vidéos : téléchargement depuis près de 1 800 sites, file d'attente, conversion, découpe et lecteur qui lit tout.",
     "L'IA améliore tes images et vidéos sur ton PC : agrandir, restaurer les visages, détourer, coloriser, fluidifier à 60 ou 120 i/s."
    ],
-   "features": [
-    "≈ 1 800 sites (vidéo, audio, images)",
-    "IA : agrandir, visages, détourage, colorisation, fluidité",
-    "Convertir et découper sans perte",
-    "Lecteur, historique, doublons"
-   ],
+   "features": ["≈ 1 800 sites (vidéo, audio, images)", "IA : agrandir, visages, détourage, colorisation, fluidité", "Convertir et découper sans perte", "Lecteur, historique, doublons"],
    "requires": "Windows 10/11 · WebView2 (ajouté par l'installation si besoin)",
    "keeps": "Ton historique et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-download",
@@ -64,12 +53,7 @@
     "Utilise ta manette PS5 DualSense sur PC, en USB ou en Bluetooth, dans n'importe quel jeu : émulation DualShock 4 (icônes PlayStation), Xbox 360 ou DualSense native.",
     "Correction du drift des sticks, mappage complet (clavier, souris, macros), profils par jeu, gyroscope, gâchettes adaptatives et manette 3D en temps réel."
    ],
-   "features": [
-    "DualShock 4, Xbox 360 ou DualSense native",
-    "Anti-drift et calibration guidée",
-    "Mappage, macros, profils par jeu",
-    "Jusqu'à 4 manettes"
-   ],
+   "features": ["DualShock 4, Xbox 360 ou DualSense native", "Anti-drift et calibration guidée", "Mappage, macros, profils par jeu", "Jusqu'à 4 manettes"],
    "requires": "Windows 10/11 · pilotes ViGEmBus et HidHide (proposés par l'appli)",
    "keeps": "Tes profils et réglages de manette sont gardés.",
    "repo": "se7enclaude/se7en-dualsense",
@@ -78,16 +62,8 @@
    "asset": "se7en-DualSense.exe",
    "installDir": "%LOCALAPPDATA%\\Programs\\se7en DualSense",
    "exe": "se7en DualSense.exe",
-   "shortcuts": [
-    "programs",
-    "desktop"
-   ],
-   "cleanup": {
-    "args": [
-     "--uninstall-cleanup"
-    ],
-    "minVersion": "0.6.2"
-   }
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "0.6.2" }
   },
   {
    "id": "se7en-voice",
@@ -99,12 +75,7 @@
     "Une centrale audio pour streamer, jouer et discuter : ta voix passe par se7en Voice puis arrive dans Discord, tes jeux et tout Windows.",
     "48 voix prêtes (Dark Vador, Ghostface, autotune, voix de fille…), effets pro avec réduction de bruit, table de mixage par appli (jeux, musique, Discord) avec ducking, soundboard, enregistrement et push-to-talk. Design studio : noir, métal et vumètres LED."
    ],
-   "features": [
-    "48 voix prêtes + tes propres presets",
-    "Réduction de bruit, autotune, timbre, égaliseur…",
-    "Table de mixage : jeux, musique, Discord",
-    "Soundboard, enregistrement et push-to-talk"
-   ],
+   "features": ["48 voix prêtes + tes propres presets", "Réduction de bruit, autotune, timbre, égaliseur…", "Table de mixage : jeux, musique, Discord", "Soundboard, enregistrement et push-to-talk"],
    "requires": "Windows 10/11 · Seven Microphone (gratuit, s'installe depuis l'appli)",
    "keeps": "Tes presets, tes sons et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-voice",
@@ -113,16 +84,8 @@
    "asset": "se7en-Voice.exe",
    "installDir": "%LOCALAPPDATA%\\Programs\\se7en Voice",
    "exe": "se7en Voice.exe",
-   "shortcuts": [
-    "programs",
-    "desktop"
-   ],
-   "cleanup": {
-    "args": [
-     "--uninstall-cleanup"
-    ],
-    "minVersion": "1.0.0"
-   }
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
   },
   {
    "id": "se7en-vision",
@@ -134,13 +97,7 @@
     "Ouvre se7en Vision sur le PC et scanne le QR code avec ton iPhone : tu es connecté tout de suite, sans rien taper, et tu vois l'écran du PC en direct, en Wi-Fi comme en 4G. Ton code à 6 chiffres, choisi une fois, sert pour le lien copié.",
     "Trois façons de piloter la souris : toucher l'écran, trackpad, ou joystick façon manette (pouce gauche pour bouger, gros bouton « Clic » : toucher, double toucher, rester appuyé pour glisser). Clavier avec accents et raccourcis. Le lien change à chaque ouverture et chaque QR code ne sert qu'une fois."
    ],
-   "features": [
-    "Écran du PC en direct sur l'iPhone",
-    "Mode Joystick : la souris au pouce, comme une manette",
-    "Toucher, trackpad, glisser-déposer, molette",
-    "Clavier, Ctrl/Alt/Win et raccourcis",
-    "Nouveau lien et nouveau code à chaque ouverture"
-   ],
+   "features": ["Écran du PC en direct sur l'iPhone", "Mode Joystick : la souris au pouce, comme une manette", "Toucher, trackpad, glisser-déposer, molette", "Clavier, Ctrl/Alt/Win et raccourcis", "Nouveau lien et nouveau code à chaque ouverture"],
    "requires": "Windows 10/11 · un iPhone (ou n'importe quel téléphone) avec Internet",
    "keeps": "Tes réglages sont sur ton téléphone : rien à garder sur le PC.",
    "repo": "se7enclaude/se7en-vision",
@@ -149,23 +106,9 @@
    "asset": "se7en-Vision.exe",
    "installDir": "%LOCALAPPDATA%\\Programs\\se7en Vision",
    "exe": "se7en Vision.exe",
-   "shortcuts": [
-    "programs",
-    "desktop"
-   ],
-   "cleanup": {
-    "args": [
-     "--uninstall-cleanup"
-    ],
-    "minVersion": "1.0.0"
-   },
-   "replaces": [
-    {
-     "name": "se7en Relais",
-     "installDir": "%LOCALAPPDATA%\\Programs\\se7en Relais",
-     "exe": "se7en Relais.exe"
-    }
-   ]
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" },
+   "replaces": [{ "name": "se7en Relais", "installDir": "%LOCALAPPDATA%\\Programs\\se7en Relais", "exe": "se7en Relais.exe" }]
   },
   {
    "id": "se7en-clip",
@@ -177,12 +120,7 @@
     "Donne une longue vidéo ou le lien d'une rediff (Twitch, YouTube, Kick, Patreon…) : se7en Clip trouve tout seul les meilleurs moments grâce à la transcription, aux pics de son, aux réactions et au chat.",
     "Chaque clip sort en vertical 9:16 avec la cam en haut et le jeu ou le vrai chat du stream en bas, ou le visage suivi, et des sous-titres mot par mot. Titre, description et hashtags sont écrits pour toi. Tout tourne sur ton PC, sans abonnement."
    ],
-   "features": [
-    "Moments forts trouvés par une IA locale",
-    "Cam + jeu, cam + chat du stream ou visage suivi",
-    "Sous-titres mot par mot (TikTok, Hormozi…)",
-    "Nombre de clips selon la durée, Patreon (connexion intégrée)"
-   ],
+   "features": ["Moments forts trouvés par une IA locale", "Cam + jeu, cam + chat du stream ou visage suivi", "Sous-titres mot par mot (TikTok, Hormozi…)", "Nombre de clips selon la durée, Patreon (connexion intégrée)"],
    "requires": "Windows 10/11 · carte graphique conseillée · ~6 Go téléchargés au premier projet (IA)",
    "keeps": "Tes projets, tes clips et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-clip",
@@ -203,12 +141,7 @@
     "Un autoclic ultra précis, de 1 clic par minute à 1 000 clics par seconde, entièrement réglable : bouton de souris ou touche du clavier, vitesse, aléatoire, points à l'écran, raccourci au choix.",
     "Et un enregistreur de macros pour farmer sur Roblox : F9 pour enregistrer tes touches, tes clics et ta caméra, F9 pour arrêter, F10 pour tout rejouer à l'identique, en boucle."
    ],
-   "features": [
-    "Autoclic jusqu'à 1 000 clics/s, sans dérive",
-    "Macros clavier + souris + caméra, enchaînées et en boucle",
-    "Anti-AFK Roblox et déclencheur couleur",
-    "Éditeur de macros, raccourcis tous réglables"
-   ],
+   "features": ["Autoclic jusqu'à 1 000 clics/s, sans dérive", "Macros clavier + souris + caméra, enchaînées et en boucle", "Anti-AFK Roblox et déclencheur couleur", "Éditeur de macros, raccourcis tous réglables"],
    "requires": "Windows 10/11",
    "keeps": "Tes macros et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-autoclick",
@@ -217,16 +150,8 @@
    "asset": "se7en-Autoclick.exe",
    "installDir": "%LOCALAPPDATA%\\Programs\\se7en Autoclick",
    "exe": "se7en Autoclick.exe",
-   "shortcuts": [
-    "programs",
-    "desktop"
-   ],
-   "cleanup": {
-    "args": [
-     "--uninstall-cleanup"
-    ],
-    "minVersion": "1.0.0"
-   }
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
   },
   {
    "id": "se7en-censored",
@@ -238,12 +163,7 @@
     "Importe un film ou une vidéo (fichier ou lien) : une IA passe sur chaque image et repère les parties intimes visibles (poitrines, sexes, fesses), puis les floute en suivant leurs mouvements. Le reste de l'image ne bouge pas.",
     "Avant l'export, tu vérifies tout sur une frise : aperçu flouté, fausses détections retirées en un clic, zones ajoutées à la main, sensibilité et marge réglables. Export rapide sur la carte graphique avec le son d'origine. Tout tourne sur ton PC."
    ],
-   "features": [
-    "Détection image par image sur la carte graphique",
-    "Suivi visuel : la zone reste floutée quand ça bouge",
-    "Zones à la main qui suivent toutes seules, raccourcis clavier",
-    "Flou, pixels ou noir · export NVENC avec le son d'origine"
-   ],
+   "features": ["Détection image par image sur la carte graphique", "Suivi visuel : la zone reste floutée quand ça bouge", "Zones à la main qui suivent toutes seules, raccourcis clavier", "Flou, pixels ou noir · export NVENC avec le son d'origine"],
    "requires": "Windows 10/11 · carte graphique conseillée (NVIDIA, AMD ou Intel)",
    "keeps": "Tes projets et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-censored",
@@ -264,12 +184,7 @@
     "Ajoute ton abonnement Xtream Codes (serveur, utilisateur, mot de passe) ou ta liste M3U : se7en IPTV Player range les chaînes, les films et les séries, avec le guide des programmes sur 7 jours. L'appli ne fournit aucune chaîne : elle lit l'abonnement que tu as déjà.",
     "Zapping instantané au clavier, reprise des films et des séries là où tu t'es arrêté, replay et enregistrements sans dépasser les connexions de ton abonnement, profils avec contrôle parental. Lecteur mpv avec décodage matériel, interface en verre liquide."
    ],
-   "features": [
-    "TV en direct et guide des programmes en grille",
-    "Films et séries avec reprise et épisode suivant",
-    "Replay et enregistrements, rappels avant un programme",
-    "Profils, contrôle parental, identifiants chiffrés"
-   ],
+   "features": ["TV en direct et guide des programmes en grille", "Films et séries avec reprise et épisode suivant", "Replay et enregistrements, rappels avant un programme", "Profils, contrôle parental, identifiants chiffrés"],
    "requires": "Windows 10/11 · un abonnement IPTV (Xtream Codes ou M3U)",
    "keeps": "Tes abonnements, favoris et réglages sont gardés.",
    "repo": "se7enclaude/se7en-iptv-player",
@@ -290,12 +205,7 @@
     "Une tuile par prise de chacun de tes écrans (HDMI, DisplayPort…) : un clic, et l'écran passe dessus. Le PC lui envoie l'ordre par le câble vidéo, comme si tu passais par son menu.",
     "Raccourcis qui marchent même quand l'écran affiche la console (Ctrl+Alt+Maj+0 pour revenir sur Windows), écrans nommés de gauche et de droite, et l'appli retient toute seule la prise de ta console. Design studio : noir, métal et prises lumineuses."
    ],
-   "features": [
-    "Un clic ou un raccourci pour changer d'entrée",
-    "Ctrl+Alt+Maj+0 : retour au PC depuis la console",
-    "Trouve tout seul où ta console est branchée",
-    "Icône près de l'horloge, lancement avec Windows"
-   ],
+   "features": ["Un clic ou un raccourci pour changer d'entrée", "Ctrl+Alt+Maj+0 : retour au PC depuis la console", "Trouve tout seul où ta console est branchée", "Icône près de l'horloge, lancement avec Windows"],
    "requires": "Windows 10/11 · écran avec DDC/CI activé (dans son menu, souvent par défaut)",
    "keeps": "Les noms de tes entrées et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-source",
@@ -304,16 +214,8 @@
    "asset": "se7en-Source.exe",
    "installDir": "%LOCALAPPDATA%\\Programs\\se7en Source",
    "exe": "se7en Source.exe",
-   "shortcuts": [
-    "programs",
-    "desktop"
-   ],
-   "cleanup": {
-    "args": [
-     "--uninstall-cleanup"
-    ],
-    "minVersion": "1.0.0"
-   }
+   "shortcuts": ["programs", "desktop"],
+   "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
   }
  ]
 }
