@@ -216,6 +216,27 @@
    "exe": "se7en Source.exe",
    "shortcuts": ["programs", "desktop"],
    "cleanup": { "args": ["--uninstall-cleanup"], "minVersion": "1.0.0" }
+  },
+  {
+   "id": "se7en-browser",
+   "name": "se7en Browser",
+   "subtitle": "Navigateur · IA locale",
+   "tagline": "Un navigateur en verre, avec une IA qui tourne sur ton PC.",
+   "accent": "#C9CED8",
+   "description": [
+    "Un navigateur Liquid Glass : onglets en haut et onglets prioritaires sur le côté (Ctrl+B), vue partagée, historique, favoris et un bloqueur de pubs et de traqueurs intégré.",
+    "L'IA tourne sur ton PC (Ollama + Qwen, installés pour toi) : discute avec la page ou un PDF, résume en un clic, range tes onglets par sujet. Ton coffre chiffré remplit les formulaires PDF, toujours après ta confirmation."
+   ],
+   "features": ["Panneau IA (Ctrl+Espace) : pages, PDF, résumés", "IA 100 % locale, rien n'est envoyé sur Internet", "Coffre chiffré et remplissage de PDF", "Bloqueur de pubs, onglets rangés par l'IA"],
+   "requires": "Windows 10/11 · carte graphique conseillée pour l'IA (≈ 11 Go de modèles)",
+   "keeps": "Tes onglets, favoris, historique, coffre et réglages sont gardés.",
+   "repo": "se7enclaude/se7en-browser",
+   "private": false,
+   "kind": "inno",
+   "manifest": "latest.json",
+   "manifestKey": "setup",
+   "uninstallKey": "{1A9955C2-B244-4539-87BD-0046C5A2DD9E}_is1",
+   "exe": "se7en Browser.exe"
   }
  ]
 }
