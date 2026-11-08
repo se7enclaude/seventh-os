@@ -29,10 +29,10 @@
    "tagline": "Télécharge, améliore et convertis tes vidéos.",
    "accent": "#F2564B",
    "description": [
-    "Le tout-en-un pour tes vidéos : téléchargement depuis près de 1 800 sites, file d'attente, conversion, découpe et lecteur qui lit tout.",
+    "Le tout-en-un pour tes vidéos : téléchargement depuis près de 1 800 sites, file d'attente, conversion, découpe et lecteur qui lit tout. Nouveau : colle un lien et choisis directement le format (MP3, M4A, OPUS, OGG, FLAC, WAV, MP4, MKV, WEBM, MOV…) avec le débit ou la qualité.",
     "L'IA améliore tes images et vidéos sur ton PC : agrandir, restaurer les visages, détourer, coloriser, fluidifier à 60 ou 120 i/s."
    ],
-   "features": ["≈ 1 800 sites (vidéo, audio, images)", "IA : agrandir, visages, détourage, colorisation, fluidité", "Convertir et découper sans perte", "Lecteur, historique, doublons"],
+   "features": ["≈ 1 800 sites (vidéo, audio, images)", "Convertir en MP3, FLAC, MKV… dès le collage du lien", "IA : agrandir, visages, détourage, colorisation, fluidité", "Composants toujours à jour, sans retéléchargement"],
    "requires": "Windows 10/11 · WebView2 (ajouté par l'installation si besoin)",
    "keeps": "Ton historique et tes réglages sont gardés.",
    "repo": "se7enclaude/se7en-download",
