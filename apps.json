@@ -252,7 +252,7 @@
    "requires": "Windows 10/11 · connexion Internet",
    "keeps": "Ton blaze, ton compte et tes réglages sont gardés.",
    "repo": "se7enclaude/leonida-crew",
-   "private": false,
+   "private": true,
    "kind": "inno",
    "manifest": "latest.json",
    "manifestKey": "setup",
