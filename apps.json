@@ -237,6 +237,27 @@
    "manifestKey": "setup",
    "uninstallKey": "{1A9955C2-B244-4539-87BD-0046C5A2DD9E}_is1",
    "exe": "se7en Browser.exe"
+  },
+  {
+   "id": "leonida-crew",
+   "name": "Leonida Crew",
+   "subtitle": "GTA VI · Communauté",
+   "tagline": "Le QG des joueurs de GTA VI : chat, bons tuyaux sur la carte et photos.",
+   "accent": "#FF3D8B",
+   "description": [
+    "Une appli compagnon pour la campagne de GTA VI, partagée en direct par toute la communauté : ton blaze et ton hashtag, ta plateforme (PlayStation ou Xbox) et ton ID de jeu, un chat global avec photos et mentions, et un clic sur un blaze pour voir où joue la personne.",
+    "La carte de Leonida (carte de la communauté YANIS, via State of Leonida, avec leur accord) pour poser les bons tuyaux au point près : astuces, secrets, véhicules, argent… avec avis « ça marche », réponses et photos. Plus le mur de photos, le compte à rebours et la veille des infos. Appli de fans non officielle, aucun lien avec le jeu ni la console."
+   ],
+   "features": ["Chat global, photos et @mentions", "Carte des bons tuyaux, au point près", "Fiche joueur : PlayStation / Xbox et ID", "Mur de photos et veille des infos"],
+   "requires": "Windows 10/11 · connexion Internet",
+   "keeps": "Ton blaze, ton compte et tes réglages sont gardés.",
+   "repo": "se7enclaude/leonida-crew",
+   "private": false,
+   "kind": "inno",
+   "manifest": "latest.json",
+   "manifestKey": "setup",
+   "uninstallKey": "{BD80CCF9-0061-419F-9662-6F364633BA74}_is1",
+   "exe": "Leonida Crew.exe"
   }
  ]
 }
