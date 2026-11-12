@@ -39,7 +39,7 @@ if (cmd === 'publish') {
     gh(['release', 'upload', tag, exe, lj, '-R', REPO, '--clobber']);
     console.log('Republié : ' + tag);
   } else {
-    gh(['release', 'create', tag, exe, lj, '-R', REPO, '--title', 'Seventh OS ' + VERSION, '--notes', (notes || '') + '\n\nInstallation : lance ' + path.basename(exe) + ', puis entre ton code d\'accès.', '--latest']);
+    gh(['release', 'create', tag, exe, lj, '-R', REPO, '--title', 'Seventh OS ' + VERSION, '--notes', (notes || '') + '\n\nInstallation : lance ' + path.basename(exe) + ', puis entre ton code d\'accès.\nSHA-256 : ' + latest.update.sha256.toUpperCase(), '--latest']);
     console.log('Publié : ' + tag);
   }
 } else {
