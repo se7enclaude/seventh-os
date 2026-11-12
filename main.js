@@ -1,7 +1,7 @@
 /* Seventh OS — le hub (processus principal Electron) : une fenêtre qui charge ui/index.html avec Node actif.
  * Données : %APPDATA%\Seventh OS (licence, catalogue en cache, téléchargements, journal). */
 'use strict';
-const { app, BrowserWindow, ipcMain, dialog, shell, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, Menu, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const cp = require('child_process');
@@ -26,8 +26,18 @@ function log(msg) {
 }
 process.on('uncaughtException', (e) => log('processus principal : ' + (e && e.stack || e)));
 
+// Position gardée seulement si un écran branché en montre encore une partie (écran débranché : fenêtre hors de vue)
+function onScreen(st) {
+  if (!Number.isFinite(st.x) || !Number.isFinite(st.y)) return false;
+  const w = st.w || 1180, h = st.h || 760;
+  // au moins un morceau attrapable (100 × 40 px), pas un simple pixel au bord
+  return screen.getAllDisplays().some(({ workArea: a }) =>
+    Math.min(st.x + w, a.x + a.width) - Math.max(st.x, a.x) >= 100 && Math.min(st.y + h, a.y + a.height) - Math.max(st.y, a.y) >= 40);
+}
+
 function createWindow() {
   const st = readState().window || {};
+  if (!onScreen(st)) { delete st.x; delete st.y; }
   win = new BrowserWindow({
     width: st.w || 1180, height: st.h || 760, x: st.x, y: st.y, minWidth: 860, minHeight: 600,
     title: 'Seventh OS', backgroundColor: '#16191B', show: false, autoHideMenuBar: true,

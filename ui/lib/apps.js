@@ -65,19 +65,44 @@
   }
 
   // ---------------------------------------------------------------- installé ?
+  // reg.exe écrit dans la page de codes de la console (OEM, 850 en français) : décodée en UTF-8, « Zoé » devenait
+  // illisible (chemin introuvable, désinstallation impossible). On passe la console en UTF-8 (chcp 65001) juste
+  // avant, dans le même cmd : la sortie est alors de l'UTF-8.
+  function parseReg(out) {
+    const v = {};
+    String(out || '').split(/\r?\n/).forEach(l => { const m = l.match(/^\s+(\S+)\s+REG_(?:SZ|EXPAND_SZ|DWORD)\s+(.*)$/); if (m) v[m[1]] = m[2].trim(); });
+    return v;
+  }
+  // -> { nom: valeur } d'une clé, ou null si elle n'existe pas
+  async function regValues(fullKey) {
+    if (/["%\r\n]/.test(fullKey)) return null; // jamais dans une clé Uninstall ; casserait la ligne de cmd
+    const r = await run('cmd.exe', ['/d', '/s', '/c', '"chcp 65001>nul & reg.exe query "' + fullKey + '""'], { windowsVerbatimArguments: true });
+    return r.code === 0 ? parseReg(r.out) : null;
+  }
   async function regKey(key) {
     for (const hive of ['HKCU', 'HKLM']) {
-      const r = await run('reg.exe', ['query', hive + '\\' + UNINSTALL + key]);
-      if (r.code !== 0) continue;
-      const v = {};
-      r.out.split(/\r?\n/).forEach(l => { const m = l.match(/^\s+(\S+)\s+REG_(?:SZ|EXPAND_SZ|DWORD)\s+(.*)$/); if (m) v[m[1]] = m[2].trim(); });
-      return v;
+      const v = await regValues(hive + '\\' + UNINSTALL + key);
+      if (v) return v;
     }
     return null;
   }
+  // Version d'un .exe portable : un PowerShell à chaque fois, c'est lent ; gardée (versions.json) tant que
+  // le fichier ne change pas (même date de modification, même taille).
+  const VERSIONS = path.join(DIR, 'versions.json');
+  let versions = null;
   async function exeVersion(file) {
+    let st;
+    try { st = fs.statSync(file); } catch (e) { return null; }
+    if (!versions) { try { versions = JSON.parse(fs.readFileSync(VERSIONS, 'utf8')) || {}; } catch (e) { versions = {}; } }
+    const k = file.toLowerCase(), c = versions[k];
+    if (c && c.mtime === st.mtimeMs && c.size === st.size) return c.version;
     const r = await ps('(Get-Item -LiteralPath ' + q(file) + ').VersionInfo | ForEach-Object { if ($_.ProductVersion) { $_.ProductVersion } else { $_.FileVersion } }');
-    return r.code === 0 ? clean(r.out.trim()) : null;
+    const version = r.code === 0 ? clean(r.out.trim()) : null;
+    if (version) {
+      versions[k] = { mtime: st.mtimeMs, size: st.size, version };
+      try { fs.mkdirSync(DIR, { recursive: true }); fs.writeFileSync(VERSIONS, JSON.stringify(versions), 'utf8'); } catch (e) { /* relue la prochaine fois */ }
+    }
+    return version;
   }
   function portableExe(app) { return path.join(expand(app.installDir), app.exe); }
 
@@ -130,18 +155,29 @@
       const m = JSON.parse(await N().text(base + encodeURIComponent(app.manifest)));
       const e = m[app.manifestKey] || {};
       const a = e.name ? asset(e.name, e.size) : null;
+      if (a && !e.sha256) throw noHash(app, tag);
       return { version: clean(m.version) || clean(tag), notes: m.notes || '', published: m.published || null, tag, asset: a, size: a ? a.size : null, sha256: e.sha256 || null };
     }
     const page = await N().text('https://github.com/' + app.repo + '/releases/tag/' + encodeURIComponent(tag));
     const m = page.match(/SHA-?256\s*:\s*(?:<[^>]+>\s*)*([0-9a-f]{64})/i);
-    if (!m) throw new Error('empreinte introuvable dans la page de ' + tag);
+    if (!m) throw noHash(app, tag);
     return { version: clean(tag), notes: '', published: null, tag, asset: asset(app.asset), size: null, sha256: m[1].toLowerCase() };
   }
+
+  // Publication sans empreinte SHA-256 : rien n'est installé (le fichier ne pourrait pas être vérifié).
+  function noHash(app, tag) {
+    const e = new Error('la publication ' + tag + ' de ' + app.name + ' ne donne pas d\'empreinte SHA-256 : installation bloquée par sécurité');
+    e.why = 'nohash';
+    return e;
+  }
+  // Empreinte calculée par GitHub pour le fichier (champ « digest » : « sha256:… »), si elle est là.
+  const digestOf = (a) => { const m = a && String(a.digest || '').match(/^sha256:([0-9a-f]{64})$/i); return m ? m[1].toLowerCase() : null; };
 
   // -> { version, notes, published, asset, size, sha256 }
   async function latest(app) {
     if (!app.private) {
-      try { return await latestPublic(app); } catch (e) { /* page de GitHub changée : l'API, comme avant */ }
+      // page de GitHub changée ou injoignable : l'API, comme avant. Mais une publication sans empreinte reste refusée.
+      try { return await latestPublic(app); } catch (e) { if (e.why === 'nohash') throw e; }
     }
     const token = tokenFor(app);
     const rel = await N().api(token, '/repos/' + app.repo + '/releases/latest');
@@ -165,22 +201,27 @@
       sha256 = m ? m[1].toLowerCase() : null;
     }
     const asset = assets.find(a => a.name === want) || null;
+    if (!sha256) sha256 = digestOf(asset);
     return { version, notes, published: rel.published_at, tag: rel.tag_name, asset, size: asset ? asset.size : null, sha256 };
   }
 
   // ---------------------------------------------------------------- actions
   // onStep({ phase: 'download' | 'install' | 'uninstall', done, total })
-  async function install(app, info, onStep) {
+  // opts.allowKill : l'utilisateur a accepté de fermer l'appli portable si elle est ouverte (jamais sans son accord).
+  async function install(app, info, onStep, opts) {
     if (!info || !info.asset) throw new Error('aucun fichier à installer dans la dernière publication de ' + app.name);
+    if (!/^[0-9a-f]{64}$/i.test(String(info.sha256 || ''))) throw new Error('la dernière publication de ' + app.name + ' ne donne pas d\'empreinte SHA-256 : installation bloquée par sécurité (le fichier ne peut pas être vérifié)');
+    const o = opts || {};
     const file = path.join(DL, info.asset.name);
-    await getFile(app, info.asset, file, { size: info.asset.size, sha256: info.sha256 || undefined, onProgress: (d, t) => onStep && onStep({ phase: 'download', done: d, total: t }) });
+    await getFile(app, info.asset, file, { size: info.asset.size, sha256: info.sha256, onProgress: (d, t) => onStep && onStep({ phase: 'download', done: d, total: t }) });
     onStep && onStep({ phase: 'install' });
     if (app.kind === 'inno') {
       const r = await run(file, INNO_ARGS.concat(['/LOG=' + path.join(DIR, app.id + '-install.log')]));
       if (r.code !== 0) throw new Error('installation de ' + app.name + ' interrompue (code ' + r.code + ')');
     } else {
       const exe = portableExe(app);
-      await run('taskkill.exe', ['/IM', app.exe, '/F']); // une copie ouverte bloquerait le remplacement
+      // une copie ouverte est mise de côté par replaceExe ; on ne la ferme que si l'utilisateur l'a accepté
+      if (o.allowKill) await run('taskkill.exe', ['/IM', app.exe, '/F']);
       fs.mkdirSync(path.dirname(exe), { recursive: true });
       const stillRunning = await replaceExe(file, exe);
       await shortcuts(app, exe, true);
@@ -188,7 +229,7 @@
       // Renommée : l'ancienne version (dossier, raccourcis, données) part à la Corbeille.
       const leftovers = [];
       for (const old of formerInstalled(app)) {
-        try { await uninstall(old); } catch (e) { leftovers.push(old.name); }
+        try { await uninstall(old, null, o); } catch (e) { leftovers.push(old.name); }
       }
       const st = await installed(app);
       st.restartNeeded = stillRunning;
@@ -202,6 +243,12 @@
   async function isRunning(exeName) {
     const r = await run('tasklist.exe', ['/FI', 'IMAGENAME eq ' + exeName, '/NH']);
     return r.out.toLowerCase().includes(exeName.toLowerCase());
+  }
+  // Appli portable ouverte (sous son nom actuel ou un ancien nom) ? Pour demander avant de la fermer.
+  async function running(app) {
+    if (app.kind !== 'portable') return false;
+    for (const exe of [app.exe].concat(formerApps(app).map(f => f.exe))) if (await isRunning(exe)) return true;
+    return false;
   }
 
   // Remplace un .exe portable, même s'il tourne encore : une appli lancée en administrateur (se7en DualSense)
@@ -254,13 +301,16 @@
     if (r.code !== 0) throw new Error('mise à la Corbeille impossible : ' + r.out.slice(0, 200));
   }
 
-  async function uninstall(app, onStep) {
+  // opts.allowKill : l'utilisateur a accepté de fermer l'appli portable si elle est ouverte.
+  async function uninstall(app, onStep, opts) {
+    const o = opts || {};
     onStep && onStep({ phase: 'uninstall' });
     if (app.kind === 'inno') {
       const st = await installed(app);
       if (!st.installed || !st.uninstall) return st;
       const exe = st.uninstall.replace(/^"([^"]+)".*$/, '$1').replace(/\s+\/.*$/, '');
-      await run(exe, ['/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART']);
+      const r = await run(exe, ['/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART']);
+      if (r.code !== 0) throw new Error('désinstallation de ' + app.name + ' interrompue (code ' + r.code + ')');
       // le désinstalleur d'Inno se relance depuis un dossier temporaire : on attend que l'appli ait disparu du registre
       for (let i = 0; i < 120; i++) {
         if (!(await regKey(app.uninstallKey))) break;
@@ -269,12 +319,13 @@
     } else {
       // Seule l'ancienne version (avant renommage) est là : c'est elle qu'on retire.
       if (!fs.existsSync(portableExe(app)) && formerInstalled(app).length) {
-        for (const old of formerInstalled(app)) await uninstall(old, onStep);
+        for (const old of formerInstalled(app)) await uninstall(old, onStep, o);
         return installed(app);
       }
       const st = await installed(app);
-      await run('taskkill.exe', ['/IM', app.exe, '/F']);
+      if (o.allowKill) await run('taskkill.exe', ['/IM', app.exe, '/F']);
       if (await isRunning(app.exe)) {
+        if (!o.allowKill) throw new Error(app.name + ' est ouverte : quitte-la puis réessaie');
         await new Promise(r => setTimeout(r, 800));
         if (await isRunning(app.exe))
           throw new Error(app.name + ' est ouverte en administrateur : quitte-la (icône près de l\'horloge › Quitter) puis réessaie');
@@ -305,13 +356,32 @@
   }
   async function downloadHub(m, onProgress) {
     const u = m.update;
+    if (!u || !/^[0-9a-f]{64}$/i.test(String(u.sha256 || ''))) throw new Error('la publication ne donne pas d\'empreinte SHA-256 : mise à jour bloquée par sécurité');
     const file = path.join(DL, u.name);
     await N().fetchTo('https://github.com/' + HUB + '/releases/download/v' + m.version + '/' + encodeURIComponent(u.name), file, { size: u.size, sha256: u.sha256, onProgress });
     return file;
   }
+  // Téléchargements : les installeurs sont normalement effacés après usage, mais pas ceux du hub (il se ferme pour
+  // s'installer) ni ceux d'une installation interrompue. Au démarrage, les .exe / .part de plus de 6 heures partent ;
+  // les *-latest.json (petits, relus à chaque vérification) restent.
+  async function purgeDownloads(maxAgeMs) {
+    const limit = Date.now() - (maxAgeMs || 6 * 3600 * 1000);
+    let names = [];
+    try { names = await fs.promises.readdir(DL); } catch (e) { return 0; }
+    let n = 0;
+    for (const name of names) {
+      if (!/\.(exe|part)$/i.test(name)) continue;
+      const f = path.join(DL, name);
+      try {
+        const st = await fs.promises.stat(f);
+        if (st.isFile() && st.mtimeMs < limit) { await fs.promises.unlink(f); n++; }
+      } catch (e) { /* encore ouvert ou déjà parti */ }
+    }
+    return n;
+  }
   const HUB_ARGS = ['/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/CLOSEAPPLICATIONS', '/RELAUNCH=1'];
 
-  const api = { DIR, catalog, installed, latest, install, uninstall, open, newer, hubUpdate, downloadHub, HUB_ARGS, expand, shortcuts, shortcutPaths };
+  const api = { DIR, DL, catalog, installed, latest, install, uninstall, open, running, newer, hubUpdate, downloadHub, purgeDownloads, HUB_ARGS, expand, shortcuts, shortcutPaths, parseReg, regValues };
   root.OSApps = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

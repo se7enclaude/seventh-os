@@ -49,17 +49,24 @@ function toast(msg, err) {
 }
 // icône d'une appli : celle du dépôt (icons/<id>.png sur main) gagne sur celle livrée avec le hub,
 // pour qu'un nouveau logo arrive sans nouvelle version de Seventh OS
+// (gardée en mémoire : relire le .png du disque à chaque rendu coûtait cher ; fetchIcon l'oublie quand elle change)
+const icons = new Map();
 function iconOf(app) {
+  if (icons.has(app.id)) return icons.get(app.id);
+  let src = 'icons/seventh-os.png';
   const cached = path.join(PATHS.data, 'icons', app.id + '.png');
-  if (fs.existsSync(cached)) return 'data:image/png;base64,' + fs.readFileSync(cached).toString('base64');
   const local = path.join(PATHS.root, 'ui', 'icons', app.id + '.png');
-  if (fs.existsSync(local)) return 'icons/' + app.id + '.png';
-  return 'icons/seventh-os.png';
+  try {
+    if (fs.existsSync(cached)) src = 'data:image/png;base64,' + fs.readFileSync(cached).toString('base64');
+    else if (fs.existsSync(local)) src = 'icons/' + app.id + '.png';
+  } catch (e) { /* icône par défaut */ }
+  icons.set(app.id, src);
+  return src;
 }
 // revalidée à chaque lancement (ETag) : retéléchargée seulement si elle a changé sur main
 async function fetchIcon(app) {
   const f = path.join(PATHS.data, 'icons', app.id + '.png');
-  try { if (await N.fetchTo('https://raw.githubusercontent.com/se7enclaude/seventh-os/main/ui/icons/' + encodeURIComponent(app.id) + '.png', f, { etagFile: f + '.etag' })) render(); } catch (e) { /* icône en cache ou livrée */ }
+  try { if (await N.fetchTo('https://raw.githubusercontent.com/se7enclaude/seventh-os/main/ui/icons/' + encodeURIComponent(app.id) + '.png', f, { etagFile: f + '.etag' })) { icons.delete(app.id); render(); } } catch (e) { /* icône en cache ou livrée */ }
 }
 
 // ------------------------------------------------------------------ code d'accès
@@ -87,27 +94,34 @@ $('#lock-form').addEventListener('submit', async (e) => {
 });
 
 // ------------------------------------------------------------------ données
+// erreur de latest() -> texte court ; « hors ligne » seulement pour une vraie coupure réseau
+const NET_ERR = /^(ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ECONNRESET|ECONNABORTED|ETIMEDOUT|ENETUNREACH|EHOSTUNREACH|ENETDOWN|EPIPE)$/;
+const OFFLINE = 'hors ligne';
+function errText(e) {
+  if (e.rateLimited) return 'GitHub limite les vérifications, réessaie ' + (e.reset ? 'vers ' + new Date(e.reset).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'dans une heure');
+  if (e.status === 401 || e.status === 403) return 'accès refusé (code à refaire ?)';
+  if (e.why === 'locked') return 'code d\'accès nécessaire';
+  if (NET_ERR.test(e.code || '') || /délai dépassé/.test(e.message || '')) return OFFLINE;
+  return (e && e.message) || String(e);
+}
 async function refreshApp(app) {
   try { state.st[app.id] = await O.installed(app); } catch (e) { state.st[app.id] = { installed: false }; }
   render();
   try { state.latest[app.id] = await O.latest(app); delete state.err[app.id]; }
-  catch (e) {
-    state.err[app.id] = e.rateLimited ? 'GitHub limite les vérifications, réessaie ' + (e.reset ? 'vers ' + new Date(e.reset).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'dans une heure')
-      : e.status === 401 || e.status === 403 ? 'accès refusé (code à refaire ?)' : (e.why === 'locked' ? 'code d\'accès nécessaire' : 'hors ligne');
-  }
+  catch (e) { state.err[app.id] = errText(e); }
   render();
 }
 async function load() {
   setStatus('wait', 'Connexion…');
+  checkHub(); // en parallèle du chargement des applis
   const c = await O.catalog(PATHS.catalog);
   state.apps = c.apps;
   state.online = c.online;
   render();
   await Promise.all(state.apps.map(a => refreshApp(a)));
   state.apps.forEach(fetchIcon);
-  const n = Object.keys(state.err).length;
+  const n = Object.values(state.err).filter(t => t === OFFLINE).length;
   setStatus(n === state.apps.length && n ? 'off' : 'ok', n === state.apps.length && n ? 'Hors ligne · versions installées seulement' : 'En ligne · ' + state.apps.length + ' applis');
-  checkHub();
 }
 function setStatus(kind, txt) {
   const s = $('#status');
@@ -131,11 +145,32 @@ function view(app) {
   }
   return v;
 }
-function busyBox(busy) {
+function busyInfo(busy) {
   const pct = busy.total ? Math.round(busy.done / busy.total * 100) : null;
   const txt = busy.phase === 'download' ? 'Téléchargement' + (pct != null ? ' · ' + pct + ' % · ' + size(busy.done) + ' / ' + size(busy.total) : '…')
     : busy.phase === 'install' ? 'Installation…' : busy.phase === 'uninstall' ? 'Désinstallation…' : 'Préparation…';
-  return h('div', {}, h('div', { class: 'progress' + (pct == null ? ' indet' : '') }, h('i', { style: pct != null ? 'width:' + pct + '%' : null })), h('div', { class: 'busy-txt' }, txt));
+  return { pct, txt };
+}
+function busyBox(app, busy) {
+  const { pct, txt } = busyInfo(busy);
+  return h('div', { 'data-busy': app.id }, h('div', { class: 'progress' + (pct == null ? ' indet' : '') }, h('i', { style: pct != null ? 'width:' + pct + '%' : null })), h('div', { class: 'busy-txt' }, txt));
+}
+// Tic de progression (~4 / s) : on met à jour la barre et le texte déjà affichés, sans tout reconstruire
+// (le défilement des Nouveautés et les clics en cours restent). -> false s'il n'y a rien à mettre à jour.
+function patchBusy(app) {
+  const busy = state.busy[app.id];
+  if (!busy) return false;
+  const boxes = [...document.querySelectorAll('[data-busy]')].filter(el => el.getAttribute('data-busy') === app.id);
+  if (!boxes.length) return false;
+  const { pct, txt } = busyInfo(busy);
+  for (const box of boxes) {
+    const bar = $('.progress', box), fill = $('.progress i', box), t = $('.busy-txt', box);
+    if (!bar || !fill || !t) return false;
+    bar.classList.toggle('indet', pct == null);
+    fill.style.width = pct != null ? pct + '%' : '';
+    if (t.textContent !== txt) t.textContent = txt;
+  }
+  return true;
 }
 function mainButton(app, v) {
   if (v.busy) return null;
@@ -145,7 +180,13 @@ function mainButton(app, v) {
 }
 
 // ------------------------------------------------------------------ rendu
+// render() peut être appelé souvent : un seul vrai rendu par image (requestAnimationFrame)
+let renderQueued = 0;
 function render() {
+  if (renderQueued) return;
+  renderQueued = requestAnimationFrame(() => { renderQueued = 0; renderNow(); });
+}
+function renderNow() {
   const grid = $('#grid');
   grid.replaceChildren(...state.apps.map(app => {
     const v = view(app);
@@ -155,7 +196,7 @@ function render() {
         h('div', {}, h('h3', {}, app.name), h('div', { class: 'sub' }, app.subtitle || ''))),
       h('p', { class: 'tag' }, app.tagline || ''),
       h('span', { class: 'chip ' + v.chipKind }, v.chip),
-      v.busy ? busyBox(v.busy) : h('div', { class: 'card-foot' },
+      v.busy ? busyBox(app, v.busy) : h('div', { class: 'card-foot' },
         h('button', { class: 'btn link', onclick: (e) => { e.stopPropagation(); openSheet(app); } }, 'Détails'),
         v.installed ? h('button', { class: 'btn link danger-link', title: 'Désinstaller ' + app.name, onclick: (e) => { e.stopPropagation(); askUninstall(app); } }, 'Désinstaller') : null,
         h('div', { class: 'grow' }),
@@ -173,6 +214,7 @@ function openSheet(app, keep) {
   state.sheet = app;
   const v = view(app), l = v.l;
   const card = $('#sheet-card');
+  const top = keep ? card.scrollTop : 0; // rafraîchie : on garde l'endroit où on lisait
   card.replaceChildren(
     h('button', { class: 'icon-btn glass close', title: 'Fermer', onclick: closeSheet }, '✕'),
     h('div', { class: 'card-head' },
@@ -186,27 +228,61 @@ function openSheet(app, keep) {
       app.requires ? [h('dt', {}, 'Il faut'), h('dd', {}, app.requires)] : null,
       v.installed && v.st.exe ? [h('dt', {}, 'Emplacement'), h('dd', {}, h('button', { class: 'btn link', onclick: () => ipcRenderer.send('os:show-folder', v.st.exe) }, path.dirname(v.st.exe)))] : null)),
     l && l.notes ? h('div', { class: 'sec' }, h('h4', {}, 'Nouveautés ' + l.version), h('div', { class: 'notes' }, md(l.notes))) : null,
-    v.busy ? h('div', { class: 'sec' }, busyBox(v.busy)) : h('div', { class: 'actions' },
+    v.busy ? h('div', { class: 'sec' }, busyBox(app, v.busy)) : h('div', { class: 'actions' },
       mainButton(app, v),
       v.installed && v.update ? h('button', { class: 'btn', onclick: () => doOpen(app) }, 'Ouvrir') : null,
       h('div', { class: 'grow' }),
       v.installed ? h('button', { class: 'btn ghost', onclick: () => askUninstall(app) }, 'Désinstaller') : null));
-  if (!keep) $('#sheet').hidden = false;
+  if (keep) card.scrollTop = top;
+  else $('#sheet').hidden = false;
 }
 function closeSheet() { state.sheet = null; $('#sheet').hidden = true; }
 $('#sheet').addEventListener('click', (e) => { if (e.target.hasAttribute('data-close')) closeSheet(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('#confirm').hidden) $('#confirm').hidden = true; else closeSheet(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('#confirm').hidden) closeConfirm(false); else closeSheet(); } });
+
+// fenêtre de confirmation -> Promise<bool> (Annuler, Échap ou clic à côté : false)
+let confirmDone = null;
+function closeConfirm(ok) {
+  $('#confirm').hidden = true;
+  const d = confirmDone;
+  confirmDone = null;
+  if (d) d(ok);
+}
+function ask(title, text, okLabel, danger) {
+  if (confirmDone) closeConfirm(false);
+  $('#confirm-title').textContent = title;
+  $('#confirm-text').textContent = text;
+  const ok = $('#confirm-ok');
+  ok.textContent = okLabel;
+  ok.className = 'btn ' + (danger ? 'danger' : 'primary');
+  ok.onclick = () => closeConfirm(true);
+  $('#confirm').hidden = false;
+  return new Promise(resolve => { confirmDone = resolve; });
+}
 
 // ------------------------------------------------------------------ actions
 async function doInstall(app) {
+  if (state.busy[app.id]) return; // déjà en cours (ex. « Tout mettre à jour » pendant une installation)
   const l = state.latest[app.id];
   if (!l || !l.asset) { toast('Rien à installer pour ' + app.name + ' (' + (state.err[app.id] || 'pas de fichier publié') + ').', true); return; }
   const wasInstalled = view(app).installed;
   const formerName = wasInstalled && state.st[app.id] && state.st[app.id].formerName;
   state.busy[app.id] = { phase: 'prep' };
   render();
+  // Appli portable ouverte : on demande avant de la fermer (jamais sans accord)
+  let allowKill = false;
   try {
-    state.st[app.id] = await O.install(app, l, (s) => { state.busy[app.id] = Object.assign({}, state.busy[app.id], s); render(); });
+    if (wasInstalled && await O.running(app)) {
+      if (!await ask(app.name + ' est ouverte', 'Pour la mettre à jour, Seventh OS doit la fermer. Pense à enregistrer ce que tu fais dedans.', 'Fermer et mettre à jour')) {
+        delete state.busy[app.id];
+        render();
+        return;
+      }
+      allowKill = true;
+    }
+  } catch (e) { /* vérification impossible : on ne ferme rien */ }
+  try {
+    state.st[app.id] = await O.install(app, l, (s) => { state.busy[app.id] = Object.assign({}, state.busy[app.id], s); if (!patchBusy(app)) render(); }, { allowKill });
     if (!state.st[app.id].installed) throw new Error('l\'installation n\'a pas abouti');
     toast((formerName ? formerName + ' devient ' + app.name + ' ' + (state.st[app.id].version || l.version) + ' : mise à jour faite.'
       : app.name + ' ' + (state.st[app.id].version || l.version) + (wasInstalled ? ' : mise à jour faite.' : ' est installée.'))
@@ -220,25 +296,26 @@ async function doInstall(app) {
 async function doOpen(app) {
   try { await O.open(app); toast(app.name + ' s\'ouvre…'); } catch (e) { toast(e.message, true); }
 }
-function askUninstall(app) {
-  $('#confirm-title').textContent = 'Désinstaller ' + app.name + ' ?';
-  $('#confirm-text').textContent = (app.kind === 'portable' ? 'Son dossier et ses raccourcis vont à la Corbeille. ' : 'Le logiciel est retiré de ce PC. ') + (app.keeps || '') + ' Tu pourras la réinstaller ici quand tu veux.';
-  $('#confirm').hidden = false;
-  $('#confirm-ok').onclick = async () => {
-    $('#confirm').hidden = true;
-    state.busy[app.id] = { phase: 'uninstall' };
-    render();
-    try {
-      state.st[app.id] = await O.uninstall(app, () => {});
-      toast(state.st[app.id].installed ? app.name + ' : la désinstallation n\'a pas abouti.' : app.name + ' est désinstallée.', state.st[app.id].installed);
-    } catch (e) { toast(app.name + ' : ' + e.message, true); }
-    finally { delete state.busy[app.id]; render(); }
-  };
+async function askUninstall(app) {
+  if (state.busy[app.id]) return;
+  let open = false;
+  try { open = await O.running(app); } catch (e) { /* inconnu : rien ne sera fermé */ }
+  const ok = await ask('Désinstaller ' + app.name + ' ?',
+    (open ? 'Elle est ouverte : Seventh OS va la fermer. ' : '') + (app.kind === 'portable' ? 'Son dossier et ses raccourcis vont à la Corbeille. ' : 'Le logiciel est retiré de ce PC. ') + (app.keeps || '') + ' Tu pourras la réinstaller ici quand tu veux.',
+    open ? 'Fermer et désinstaller' : 'Désinstaller', true);
+  if (!ok || state.busy[app.id]) return;
+  state.busy[app.id] = { phase: 'uninstall' };
+  render();
+  try {
+    state.st[app.id] = await O.uninstall(app, () => {}, { allowKill: open });
+    toast(state.st[app.id].installed ? app.name + ' : la désinstallation n\'a pas abouti.' : app.name + ' est désinstallée.', state.st[app.id].installed);
+  } catch (e) { toast(app.name + ' : ' + e.message, true); }
+  finally { delete state.busy[app.id]; render(); }
 }
-$('#confirm').addEventListener('click', (e) => { if (e.target.hasAttribute('data-cancel')) $('#confirm').hidden = true; });
+$('#confirm').addEventListener('click', (e) => { if (e.target.hasAttribute('data-cancel')) closeConfirm(false); });
 $('#refresh').addEventListener('click', () => load());
 $('#update-all').addEventListener('click', async () => {
-  for (const a of state.apps.filter(x => view(x).update)) await doInstall(a);
+  for (const a of state.apps.filter(x => view(x).update && !state.busy[x.id])) await doInstall(a);
 });
 
 // ------------------------------------------------------------------ mise à jour de Seventh OS
@@ -264,8 +341,10 @@ async function checkHub() {
 // ------------------------------------------------------------------ démarrage
 function start() {
   $('#hub').hidden = false;
+  O.purgeDownloads().catch(() => { /* rien */ }); // vieux installeurs téléchargés
   load();
 }
 // développement (tools/run.js --dev) : sans code ; --sheet <id> : fiche ouverte (captures de vérification)
-if (process.env.OS_DEV || A.licence()) start(); else showLock();
+// la licence est lue sans bloquer l'interface (PowerShell / DPAPI)
+A.loadLicence().then((l) => { if (process.env.OS_DEV || l) start(); else showLock(); });
 if (process.env.OS_SHEET) setTimeout(() => { const a = state.apps.find(x => x.id === process.env.OS_SHEET); if (a) openSheet(a); }, 6000);

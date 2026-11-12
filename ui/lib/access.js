@@ -48,28 +48,65 @@
   }
 
   // DPAPI par PowerShell (Windows) : le secret passe par l'entrée standard, jamais sur la ligne de commande
+  const PS_ARGS = ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command'];
+  const dpapiScript = (mode) => mode === 'protect'
+    ? '$s=[Console]::In.ReadToEnd(); Add-Type -AssemblyName System.Security; [Convert]::ToBase64String([Security.Cryptography.ProtectedData]::Protect([Text.Encoding]::UTF8.GetBytes($s), $null, "CurrentUser"))'
+    : '$s=[Console]::In.ReadToEnd().Trim(); Add-Type -AssemblyName System.Security; [Text.Encoding]::UTF8.GetString([Security.Cryptography.ProtectedData]::Unprotect([Convert]::FromBase64String($s), $null, "CurrentUser"))';
   function dpapi(mode, input) {
-    const ps = mode === 'protect'
-      ? '$s=[Console]::In.ReadToEnd(); Add-Type -AssemblyName System.Security; [Convert]::ToBase64String([Security.Cryptography.ProtectedData]::Protect([Text.Encoding]::UTF8.GetBytes($s), $null, "CurrentUser"))'
-      : '$s=[Console]::In.ReadToEnd().Trim(); Add-Type -AssemblyName System.Security; [Text.Encoding]::UTF8.GetString([Security.Cryptography.ProtectedData]::Unprotect([Convert]::FromBase64String($s), $null, "CurrentUser"))';
-    const r = cp.spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command', ps], { input, encoding: 'utf8', windowsHide: true, timeout: 20000 });
+    const r = cp.spawnSync('powershell.exe', PS_ARGS.concat([dpapiScript(mode)]), { input, encoding: 'utf8', windowsHide: true, timeout: 20000 });
     if (r.status !== 0) throw new Error('protection Windows indisponible : ' + String(r.stderr || r.error || '').slice(0, 200));
     return String(r.stdout).trim();
   }
+  // Même chose sans bloquer l'interface (PowerShell met 200 à 300 ms à démarrer)
+  function dpapiAsync(mode, input) {
+    return new Promise((resolve, reject) => {
+      let out = '', err = '', p;
+      try { p = cp.spawn('powershell.exe', PS_ARGS.concat([dpapiScript(mode)]), { windowsHide: true }); } catch (e) { reject(e); return; }
+      const timer = setTimeout(() => { try { p.kill(); } catch (e) { /* déjà fini */ } }, 20000);
+      p.stdout.setEncoding('utf8');
+      p.stderr.setEncoding('utf8');
+      p.stdout.on('data', d => { out += d; });
+      p.stderr.on('data', d => { err += d; });
+      p.on('error', e => { clearTimeout(timer); reject(e); });
+      p.on('close', code => {
+        clearTimeout(timer);
+        if (code !== 0) reject(new Error('protection Windows indisponible : ' + err.slice(0, 200)));
+        else resolve(out.trim());
+      });
+      p.stdin.on('error', () => { /* PowerShell déjà fermé : l'erreur arrive par close */ });
+      p.stdin.end(input, 'utf8');
+    });
+  }
 
-  let cached = null;
+  // La licence est lue une fois (loadLicence, au démarrage, sans bloquer) puis gardée en mémoire.
+  let cached = null, loaded = false;
+  function fromFile(l, token) {
+    if (!token) return null;
+    // « - » : code juste, mais pas encore de clé GitHub dans l'app (mises à jour pas encore branchées)
+    return { repo: l.repo, token: token === NO_KEY ? null : token, since: l.since };
+  }
+  async function loadLicence() {
+    if (loaded) return cached;
+    try {
+      const l = JSON.parse(await fs.promises.readFile(LICENCE, 'utf8'));
+      cached = fromFile(l, await dpapiAsync('unprotect', l.token));
+    } catch (e) {
+      cached = null;
+    }
+    loaded = true;
+    return cached;
+  }
+  // synchrone : ce que loadLicence a lu (lecture bloquante seulement si elle n'a pas encore été faite)
   function licence() {
-    if (cached) return cached;
+    if (cached || loaded) return cached;
     try {
       const l = JSON.parse(fs.readFileSync(LICENCE, 'utf8'));
-      const token = dpapi('unprotect', l.token);
-      if (!token) return null;
-      // « - » : code juste, mais pas encore de clé GitHub dans l'app (mises à jour pas encore branchées)
-      cached = { repo: l.repo, token: token === NO_KEY ? null : token, since: l.since };
-      return cached;
+      cached = fromFile(l, dpapi('unprotect', l.token));
     } catch (e) {
-      return null;
+      cached = null;
     }
+    loaded = true;
+    return cached;
   }
 
   function saveLicence(repo, token) {
@@ -78,11 +115,13 @@
     fs.writeFileSync(LICENCE + '.tmp', JSON.stringify(l, null, 1), 'utf8');
     fs.renameSync(LICENCE + '.tmp', LICENCE);
     cached = { repo, token: token === NO_KEY ? null : token, since: l.since };
+    loaded = true;
     return cached;
   }
 
   function forget() {
     cached = null;
+    loaded = true;
     try { fs.unlinkSync(LICENCE); } catch (e) { /* absent */ }
   }
 
@@ -114,7 +153,7 @@
     return { ok: true };
   }
 
-  const api = { DIR, LICENCE, normCode, seal, open, licence, saveLicence, forget, bundled, unlock };
+  const api = { DIR, LICENCE, normCode, seal, open, licence, loadLicence, saveLicence, forget, bundled, unlock };
   root.S7Access = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
