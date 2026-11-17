@@ -258,6 +258,27 @@
    "manifestKey": "setup",
    "uninstallKey": "{BD80CCF9-0061-419F-9662-6F364633BA74}_is1",
    "exe": "Leonida Crew.exe"
+  },
+  {
+   "id": "zerolag",
+   "name": "ZeroLag",
+   "subtitle": "Capture console à latence minimale",
+   "tagline": "Ta PS5 sur l'écran du PC, sans délai.",
+   "accent": "#FF4A17",
+   "description": [
+    "Affiche ta console sur le PC avec le moins de délai possible, par ta carte de capture (Elgato, AVerMedia, Razer, Magewell et cartes HDMI USB). L'image part dès qu'elle arrive, sans file d'attente, en HDR si ton écran le permet.",
+    "Enregistrement matériel H.264 / HEVC / AV1, replay toujours prêt, son du jeu au casque en ≈ 10 ms, et la Fluidité x2 : les jeux à 30 i/s passent à 60 i/s pour seulement ~17 ms de délai."
+   ],
+   "features": ["Aperçu ≈ 20 ms, mode jeu sans interface", "Fluidité x2 : 30 → 60 i/s (Ctrl + F7)", "Enregistrement et replay sans perte d'aperçu", "Son du jeu au casque avec Discord"],
+   "requires": "Windows 10/11 · une carte de capture HDMI · carte graphique DirectX 11",
+   "keeps": "Tes vidéos et captures d'écran (Vidéos\\ZeroLag, Images\\ZeroLag) sont gardées.",
+   "repo": "se7enclaude/zerolag",
+   "private": false,
+   "kind": "portable",
+   "asset": "ZeroLag.exe",
+   "installDir": "%LOCALAPPDATA%\\Programs\\ZeroLag",
+   "exe": "ZeroLag.exe",
+   "shortcuts": ["programs", "desktop"]
   }
  ]
 }
