@@ -237,48 +237,6 @@
    "manifestKey": "setup",
    "uninstallKey": "{1A9955C2-B244-4539-87BD-0046C5A2DD9E}_is1",
    "exe": "se7en Browser.exe"
-  },
-  {
-   "id": "leonida-crew",
-   "name": "Leonida Crew",
-   "subtitle": "GTA VI · Communauté",
-   "tagline": "Le QG des joueurs de GTA VI : chat, bons tuyaux sur la carte et photos.",
-   "accent": "#FF3D8B",
-   "description": [
-    "Une appli compagnon pour la campagne de GTA VI, partagée en direct par toute la communauté : ton blaze et ton hashtag, ta plateforme (PlayStation ou Xbox) et ton ID de jeu, un chat global avec photos et mentions, et un clic sur un blaze pour voir où joue la personne.",
-    "La carte de Leonida (carte de la communauté YANIS, via State of Leonida, avec leur accord) pour poser les bons tuyaux au point près : astuces, secrets, véhicules, argent… avec avis « ça marche », réponses et photos. Plus le mur de photos, le compte à rebours et la veille des infos. Appli de fans non officielle, aucun lien avec le jeu ni la console."
-   ],
-   "features": ["Chat global, photos et @mentions", "Carte des bons tuyaux, au point près", "Fiche joueur : PlayStation / Xbox et ID", "Mur de photos et veille des infos"],
-   "requires": "Windows 10/11 · connexion Internet",
-   "keeps": "Ton blaze, ton compte et tes réglages sont gardés.",
-   "repo": "se7enclaude/leonida-crew",
-   "private": true,
-   "kind": "inno",
-   "manifest": "latest.json",
-   "manifestKey": "setup",
-   "uninstallKey": "{BD80CCF9-0061-419F-9662-6F364633BA74}_is1",
-   "exe": "Leonida Crew.exe"
-  },
-  {
-   "id": "zerolag",
-   "name": "ZeroLag",
-   "subtitle": "Capture console à latence minimale",
-   "tagline": "Ta PS5 sur l'écran du PC, sans délai.",
-   "accent": "#FF4A17",
-   "description": [
-    "Affiche ta console sur le PC avec le moins de délai possible, par ta carte de capture (Elgato, AVerMedia, Razer, Magewell et cartes HDMI USB). L'image part dès qu'elle arrive, sans file d'attente, en HDR si ton écran le permet.",
-    "Enregistrement matériel H.264 / HEVC / AV1, replay toujours prêt, son du jeu au casque en ≈ 10 ms, et la Fluidité x2 : les jeux à 30 i/s passent à 60 i/s pour seulement ~17 ms de délai."
-   ],
-   "features": ["Aperçu ≈ 20 ms, mode jeu sans interface", "Fluidité x2 : 30 → 60 i/s (Ctrl + F7)", "Enregistrement et replay sans perte d'aperçu", "Son du jeu au casque avec Discord"],
-   "requires": "Windows 10/11 · une carte de capture HDMI · carte graphique DirectX 11",
-   "keeps": "Tes vidéos et captures d'écran (Vidéos\\ZeroLag, Images\\ZeroLag) sont gardées.",
-   "repo": "se7enclaude/zerolag",
-   "private": false,
-   "kind": "portable",
-   "asset": "ZeroLag.exe",
-   "installDir": "%LOCALAPPDATA%\\Programs\\ZeroLag",
-   "exe": "ZeroLag.exe",
-   "shortcuts": ["programs", "desktop"]
   }
  ]
 }
